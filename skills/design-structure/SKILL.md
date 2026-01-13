@@ -157,7 +157,7 @@ interface_adapter/
 
 After initial separation, each unit may need further separation using the other Axis.
 
-**Important:** Step 2 Stage must be lower than Step 1 Stage.
+**CRITICAL: Step 2 Stage must be LOWER than Step 1 Stage.**
 
 | Step 1 Stage | Step 2 Options |
 |--------------|----------------|
@@ -166,6 +166,11 @@ After initial separation, each unit may need further separation using the other 
 | files | functions, inline |
 | functions | inline |
 | inline | (none) |
+
+**Example of INVALID derivation:**
+- Step 1: files stage
+- Step 2: files stage ← WRONG (must be functions or inline)
+- Result: packages ← WRONG (contradicts Step 1)
 
 See [references/stages/](references/stages/) for examples of each stage.
 

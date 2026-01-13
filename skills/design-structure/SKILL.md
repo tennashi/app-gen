@@ -53,9 +53,8 @@ Note:
 ### Axis
 Direction of separation: by-layer or by-feature.
 
-Reference:
-- [By Layer](references/axes/by-layer.md)
-- [By Feature](references/axes/by-feature.md)
+- **By Layer**: Group by technical responsibility (entity.go, handler.go, ...)
+- **By Feature**: Group by domain concept (user.go, project.go, ...)
 
 ### Stage
 Granularity of separation:

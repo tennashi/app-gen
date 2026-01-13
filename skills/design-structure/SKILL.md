@@ -105,31 +105,38 @@ repository/
 
 Implementation layers (e.g., DB, external API) can be extracted. Same choice applies: Layer or Feature separation.
 
-**Layer separation (shared infrastructure):**
+**Layer separation:**
 ```
 user/
-  model.go
-  handler.go
-  repository.go  // interface
+  ...
 project/
   ...
-infrastructure/   // shared across domain entities
-  db.go           // all DB implementations
-  http_client.go  // all external API clients
+infrastructure/   // grouped by Layer
+  db.go
+  http_client.go
 ```
 
-**Feature separation (per-entity infrastructure):**
+**Feature separation:**
 ```
 user/
-  model.go
-  handler.go
-  repository.go
-  infrastructure/
-    mysql.go      // User's DB implementation
+  ...
 project/
   ...
-  infrastructure/
-    mysql.go      // Project's DB implementation
+db/               // grouped by Feature (implementation type)
+  mysql.go
+  postgres.go
+http_client/
+  payment.go
+```
+
+**Files only (no directory):**
+```
+user/
+  ...
+project/
+  ...
+db.go             // simple, no directory needed
+http_client.go
 ```
 
 ---

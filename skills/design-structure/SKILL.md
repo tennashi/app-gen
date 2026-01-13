@@ -116,12 +116,12 @@ Choose Axis based on matrix shape:
 | Feature count > (Layer + Component) count | Feature (slice columns) |
 | Feature count ≤ (Layer + Component) count | Layer (slice rows) |
 
-Choose Stage based on total volume:
+Choose Stage based on Code Unit count (see Decision Criteria for details):
 
-| Volume | Stage |
-|--------|-------|
-| Small (fits in files) | files |
-| Medium/Large | packages |
+| Code Units | Stage |
+|------------|-------|
+| ≤ 30 | files (default) |
+| 31+ | packages |
 
 **Example: Feature axis + files stage** (slice by columns)
 ```
@@ -247,13 +247,40 @@ Grouping is the inverse of separation.
 
 ### Stage Selection
 
-| Condition | Stage |
-|-----------|-------|
-| Few items, small code | inline |
-| Multiple items, still small code | functions |
-| Multiple items, moderate code | files |
-| Many items or large code | packages |
-| Independent deployment needed | services |
+**By Code Unit count:**
+
+| Code Units | Stage |
+|------------|-------|
+| 1-3 | inline or functions |
+| 4-10 | files |
+| 11-30 | files (consider packages if complex) |
+| 31+ | packages |
+
+**By estimated lines per Code Unit:**
+
+| Lines/Unit | Stage |
+|------------|-------|
+| < 50 | files (combine in single file per axis) |
+| 50-150 | files (separate files) |
+| 150+ | packages |
+
+**Principle: Start minimal, grow as needed.**
+- Default to files stage
+- Only use packages when files become unwieldy
+
+### Git-based Scale Analysis (Optional)
+
+When existing codebase available:
+
+| Metric | Threshold | Implication |
+|--------|-----------|-------------|
+| Total lines | < 1000 | files stage sufficient |
+| Total lines | 1000-5000 | files or packages |
+| Total lines | 5000+ | packages likely needed |
+| Commits/month | < 10 | Low churn, files sufficient |
+| Commits/month | 10+ | Higher churn, consider packages |
+| Contributors | 1-2 | files sufficient |
+| Contributors | 3+ | packages for parallel work |
 
 ### When to Separate Further
 

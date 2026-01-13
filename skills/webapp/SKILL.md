@@ -11,9 +11,10 @@ This skill generates web application code from domain models using Clean Archite
 
 ## Workflow
 
+**Execute all steps in sequence without stopping for user confirmation.**
+
 1. **Analyze Relationships**
    - Use the `analyze-relations` skill to analyze domain models
-   - Proceed automatically (user can interrupt if issues found)
 
 2. **Write Layer Structure**
    - Clean Architecture: Use `analyze-layers` skill (derives from requirements)

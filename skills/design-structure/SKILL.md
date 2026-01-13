@@ -53,17 +53,17 @@ Note:
 ### Axis
 Direction of separation: by-layer or by-feature.
 
-- **By Layer**: Group by technical responsibility (entity, handler, ...)
-- **By Feature**: Group by domain concept (user, project, ...)
+- **By Layer**: Group by technical responsibility (entity.{ext}, handler.{ext}, ...)
+- **By Feature**: Group by domain concept (user.{ext}, project.{ext}, ...)
 
 ### Stage
 Granularity of separation:
 
 | Stage | Description | Example |
 |-------|-------------|---------|
-| inline | No separation | all in main |
+| inline | No separation | all in main.{ext} |
 | functions | Split into functions | newUser(), saveUser() |
-| files | Split into files | user, handler |
+| files | Split into files | user.{ext}, handler.{ext} |
 | packages | Split into directories | user/, handler/ |
 | services | Split into services | user-service/ |
 
@@ -111,7 +111,7 @@ The (Layer/Component) × Feature matrix is sliced along one axis, then optionall
 Everything starts in one file (Stage: inline).
 
 ```
-main   // all Code Units in one file
+main.{ext}   // all Code Units in one file
 ```
 
 ### Step 1: Initial Separation
@@ -132,16 +132,16 @@ Choose Stage based on Code Unit count (see Decision Criteria for details):
 
 **Example: Feature axis + files stage** (slice by columns)
 ```
-task        // Entity×Task, Handler×Task, Repository×Task
-project     // Entity×Project, Handler×Project, Repository×Project
-comment     // ...
+task.{ext}        // Entity×Task, Handler×Task, Repository×Task
+project.{ext}     // Entity×Project, Handler×Project, Repository×Project
+comment.{ext}     // ...
 ```
 
 **Example: Layer axis + files stage** (slice by rows)
 ```
-entity      // Entity×Task, Entity×Project, Entity×Comment, ...
-handler     // Handler×Task, Handler×Project, ...
-repository  // Repository×Task, Repository×Project, ...
+entity.{ext}      // Entity×Task, Entity×Project, Entity×Comment, ...
+handler.{ext}     // Handler×Task, Handler×Project, ...
+repository.{ext}  // Repository×Task, Repository×Project, ...
 ```
 
 **Example: Layer axis + packages stage**
@@ -191,14 +191,14 @@ Feature-bound:              Cross-feature:
 **Result:**
 ```
 task/                      // Feature-bound, grouped by Feature
-  entity
-  handler
-  repository
+  entity.{ext}
+  handler.{ext}
+  repository.{ext}
 project/
   ...
 framework/                 // Cross-feature, separated independently
-  db
-  http
+  db.{ext}
+  http.{ext}
 ```
 
 ### Grouping Rules

@@ -17,9 +17,9 @@ Separation by splitting into multiple files.
 Each file contains all Layers for one Feature:
 
 ```
-user        // Entity×User, Handler×User, Repository×User
-project     // Entity×Project, Handler×Project, Repository×Project
-task        // Entity×Task, Handler×Task, Repository×Task
+user.{ext}        // Entity×User, Handler×User, Repository×User
+project.{ext}     // Entity×Project, Handler×Project, Repository×Project
+task.{ext}        // Entity×Task, Handler×Task, Repository×Task
 ```
 
 Internal separation: functions or inline (see [functions.md](functions.md), [inline.md](inline.md))
@@ -29,9 +29,9 @@ Internal separation: functions or inline (see [functions.md](functions.md), [inl
 Each file contains all Features for one Layer:
 
 ```
-entity      // User, Project, Task entities
-handler     // User, Project, Task handlers
-repository  // User, Project, Task repositories
+entity.{ext}      // User, Project, Task entities
+handler.{ext}     // User, Project, Task handlers
+repository.{ext}  // User, Project, Task repositories
 ```
 
 Internal separation: functions or inline

@@ -15,7 +15,7 @@ No separation - code is embedded directly without function or file boundaries.
 ### All Code Units inline (single file)
 
 ```
-// main file
+// main.{ext}
 
 function main() {
     // --- Entity ---

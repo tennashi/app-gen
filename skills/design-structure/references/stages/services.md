@@ -18,17 +18,17 @@ Each service owns all Layers for one Feature:
 
 ```
 user-service/
-  main
+  main.{ext}
   entity/
   handler/
   repository/
 project-service/
-  main
+  main.{ext}
   entity/
   handler/
   repository/
 api-gateway/
-  main
+  main.{ext}
 ```
 
 Internal separation: packages, files, functions, or inline
@@ -39,13 +39,13 @@ Shared services by technical responsibility:
 
 ```
 api-service/        // All Handlers
-  main
-  user_handler
-  project_handler
+  main.{ext}
+  user_handler.{ext}
+  project_handler.{ext}
 domain-service/     // All Entities + UseCases
-  main
+  main.{ext}
 data-service/       // All Repositories
-  main
+  main.{ext}
 ```
 
 Internal separation: packages, files, functions, or inline

@@ -17,7 +17,7 @@ Separation by extracting functions within a file.
 All Code Units for one Feature, separated by functions:
 
 ```
-// user file
+// user.{ext}
 
 // Entity
 class User { id, name }
@@ -37,7 +37,7 @@ function UserRepository.save(user) { ... }
 All Code Units for one Layer, separated by functions:
 
 ```
-// handler file
+// handler.{ext}
 
 // User Handler
 function newUserHandler(repo) { ... }

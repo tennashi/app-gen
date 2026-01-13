@@ -160,9 +160,11 @@ After initial separation, each unit may need further separation using the other 
 
 | Step 1 Stage | Step 2 Options |
 |--------------|----------------|
+| services | packages, files, functions, inline |
 | packages | files, functions, inline |
 | files | functions, inline |
 | functions | inline |
+| inline | (none) |
 
 #### When Step 1 = packages
 

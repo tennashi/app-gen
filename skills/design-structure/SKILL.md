@@ -176,12 +176,25 @@ task/
   repository.go
 ```
 
-files → functions/inline:
+files → functions:
 ```
 task.go
   - type Task struct { ... }
   - func NewTaskHandler() { ... }
   - func NewTaskRepository() { ... }
+```
+
+files → inline:
+```
+task.go
+  // --- Entity ---
+  type Task struct { ... }
+
+  // --- Handler ---
+  // (handler code directly, no separate function)
+
+  // --- Repository ---
+  // (repository code directly, no separate function)
 ```
 
 ### Step 3: Extract Cross-feature Layers

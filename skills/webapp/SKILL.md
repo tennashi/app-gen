@@ -14,18 +14,17 @@ This skill generates web application code from domain models using Clean Archite
 **Execute all steps in sequence without stopping for user confirmation.**
 
 1. **Analyze Relationships**
-   - Use the `analyze-relations` skill to analyze domain models
-   - Do NOT write results to CLAUDE.md (internal analysis only)
+   - Read domain model files and infer entity relationships
+   - Internal analysis only, do NOT write to CLAUDE.md
 
 2. **Write Layer Structure**
-   - Clean Architecture: Use `analyze-layers` skill (derives from requirements)
-   - Other architectures: Write static layer structure (see "Static Layer Structures" below)
-   - Writes `## Layer Structure` to CLAUDE.md
+   - Apply `analyze-layers` logic to derive layers from requirements
+   - Write `## Layer Structure` to CLAUDE.md
 
 3. **Design Directory Structure**
-   - Use the `design-structure` skill
-   - Reads `## Layer Structure` from CLAUDE.md
-   - Writes `## Directory Structure` to CLAUDE.md
+   - Apply `design-structure` logic to derive directory structure
+   - Read `## Layer Structure` from CLAUDE.md
+   - Write `## Directory Structure` to CLAUDE.md
 
 4. **Generate Code**
    - Read CLAUDE.md for configuration, layer structure, and directory structure

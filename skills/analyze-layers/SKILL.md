@@ -20,9 +20,10 @@ Derives layer structure from application requirements and compares it with the c
 1. **Read Requirements**
    - Parse CLAUDE.md for application description, external interfaces, and dependencies
 
-2. **Analyze Domain**
-   - Read `domain/` code to extract entities and invariants
-   - Invariants = validation rules, state transitions, business constraints
+2. **Analyze Domain Logic**
+   - Search codebase for domain logic (not limited to specific directories)
+   - Domain logic = validation rules, state transitions, business constraints
+   - Look for methods like `CanX()`, `IsValid()`, `Validate()`, state machine patterns
 
 3. **Derive Layer Structure**
    - Apply derivation logic based on requirements and domain analysis
@@ -55,7 +56,7 @@ Human writes in CLAUDE.md:
 ```
 
 Automatically gathered:
-- Entities and invariants from `domain/` code
+- Entities and domain logic from codebase
 - Current code structure
 - Git information (optional)
 
@@ -82,8 +83,8 @@ Automatically gathered:
 
 | Condition | Decision | Rationale |
 |-----------|----------|-----------|
-| `domain/` has invariants | Separate Entity layer | Testability benefit |
-| No invariants | Entity layer unnecessary | No benefit to separate |
+| Domain logic exists (validation, state transitions) | Separate Entity layer | Testability benefit |
+| No domain logic (data-only structures) | Entity layer unnecessary | No benefit to separate |
 | Multiple external interfaces sharing logic | Derive UseCase layer | Reusability benefit |
 | Single external interface | UseCase unnecessary | No benefit to separate |
 
@@ -108,7 +109,7 @@ Automatically gathered:
 
 - [Simple Internal Tool](references/examples/simple-internal-tool.md) - Entity + InterfaceAdapter
 - [E-commerce Order System](references/examples/ecommerce-order-system.md) - Entity + UseCase + InterfaceAdapter with multiple implementations
-- [Simple CRUD](references/examples/simple-crud.md) - InterfaceAdapter only (no invariants)
+- [Simple CRUD](references/examples/simple-crud.md) - InterfaceAdapter only (no domain logic)
 
 ---
 

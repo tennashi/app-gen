@@ -22,7 +22,7 @@ Order management system with multiple entry points.
 
 ## Domain Analysis
 
-- `domain/Order` has `Confirm()`, `CanCancel()` → invariants exist
+- `Order` has `Confirm()`, `CanCancel()` → domain logic exists
 - Multiple interfaces need order confirmation logic
 
 ## Output

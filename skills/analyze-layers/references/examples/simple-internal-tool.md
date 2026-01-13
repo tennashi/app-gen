@@ -18,7 +18,7 @@ Internal TODO app for a small team.
 
 ## Domain Analysis
 
-- `domain/Task` has `CanTransitionTo()`, `IsOverdue()` → invariants exist
+- `Task` has `CanTransitionTo()`, `IsOverdue()` → domain logic exists
 
 ## Output
 

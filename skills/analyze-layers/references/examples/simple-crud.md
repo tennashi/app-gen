@@ -18,7 +18,7 @@ Simple bookmark manager. No business logic.
 
 ## Domain Analysis
 
-- `domain/Bookmark` has only data fields, no methods → no invariants
+- `Bookmark` has only data fields, no methods → no domain logic
 
 ## Output
 

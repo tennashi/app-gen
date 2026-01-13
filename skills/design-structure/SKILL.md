@@ -1,6 +1,6 @@
 ---
 name: design-structure
-description: Design directory structure from layer structure. Applies Stage/Axis rules to create concrete directory layouts. Use after analyze-layers, before code generation.
+description: Design directory structure from layer structure. Applies Stage/Axis rules to create concrete directory layouts. Use before code generation.
 ---
 
 # Directory Structure Designer
@@ -12,7 +12,7 @@ Transforms layer structure into concrete directory structure by applying Stage a
 ## Workflow
 
 1. **Read Layer Structure**
-   - Parse CLAUDE.md for `## Layer Structure` section (written by `analyze-layers`)
+   - Parse CLAUDE.md for `## Layer Structure` section
 
 2. **Count Entities**
    - Search codebase for entity count to determine stage
@@ -26,7 +26,7 @@ Transforms layer structure into concrete directory structure by applying Stage a
 
 ## Input
 
-Read from project's CLAUDE.md (written by `analyze-layers`):
+Read from project's CLAUDE.md:
 
 ```markdown
 ## Layer Structure
@@ -128,7 +128,7 @@ Apply stage based on entity count, only to layers present in input.
 
 **Example 1: Entity + InterfaceAdapter** (no UseCase)
 
-CLAUDE.md (Layer Structure from analyze-layers):
+CLAUDE.md (Layer Structure):
 ```markdown
 ### Entity
 ### InterfaceAdapter
@@ -155,7 +155,7 @@ dist/
 
 **Example 2: Entity + UseCase + InterfaceAdapter** (full)
 
-CLAUDE.md (Layer Structure from analyze-layers):
+CLAUDE.md (Layer Structure):
 ```markdown
 ### Entity
 ### UseCase
@@ -187,7 +187,7 @@ dist/
 
 **Example 3: InterfaceAdapter only** (no domain logic)
 
-CLAUDE.md (Layer Structure from analyze-layers):
+CLAUDE.md (Layer Structure):
 ```markdown
 ### InterfaceAdapter
   - Handler (input)

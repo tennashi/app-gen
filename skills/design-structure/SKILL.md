@@ -7,7 +7,9 @@ description: Design directory structure from layer structure. Derives structure 
 
 ## Overview
 
-Designs directory structure by iteratively deciding how to separate code. Starts from a single file and grows through Feature/Layer separation decisions.
+Designs directory structure by iteratively deciding how to separate code. Each separation decision involves two choices:
+- **Axis**: Layer or Feature (direction of separation)
+- **Stage**: How far to separate (granularity)
 
 ## Definitions
 
@@ -17,167 +19,194 @@ Horizontal separation. Partitions by technical responsibility with defined depen
 ### Feature
 Vertical separation within a Layer. Each Layer defines its own Features independently.
 
+### Axis
+Direction of separation: by-layer or by-feature.
+
+### Stage
+Granularity of separation:
+
+| Stage | Description | Example |
+|-------|-------------|---------|
+| inline | No separation | all in `main.go` |
+| files | Split into files | `user.go`, `handler.go` |
+| packages | Split into directories | `user/`, `handler/` |
+| services | Split into services | `user-service/` |
+
 ## Workflow
 
 1. **Read Layer Structure**
    - Parse CLAUDE.md for `## Layer Structure` section
    - Count Features (domain entities) and Layers
 
-2. **Derive Initial Separation**
-   - Compare Feature count vs Layer count
-   - Decide first axis (by-feature or by-layer)
+2. **Derive Separation Decisions**
+   - For each separation point, decide Axis and Stage
+   - Based on counts and implementation volume
 
-3. **Apply Recursive Separation**
-   - For each unit, decide if internal separation is needed
-   - Based on implementation volume within the unit
-
-4. **Extract Shared Layers**
-   - Identify implementation not tied to specific domain entities (e.g., infrastructure)
-   - Separate as shared layer
-
-5. **Write to CLAUDE.md**
+3. **Write to CLAUDE.md**
    - Write designed directory structure to project's CLAUDE.md
 
 ---
 
 ## Separation Flow
 
-### Stage 0: Single File
+Each separation decision = **Axis** (direction) × **Stage** (granularity)
 
-Everything starts in one file.
+### Step 0: Single File
+
+Everything starts in one file (Stage: inline).
 
 ```
 main.go
 ```
 
-### Stage 1: Initial Separation
+### Step 1: Initial Separation
 
-| Condition | Decision | Rationale |
-|-----------|----------|-----------|
-| Feature count > Layer count | Feature separation first | Avoid large layer files |
-| Feature count ≤ Layer count | Layer separation first | Simpler structure sufficient |
+Choose Axis based on counts:
 
-**Feature separation first:**
+| Condition | Axis |
+|-----------|------|
+| Feature count > Layer count | Feature |
+| Feature count ≤ Layer count | Layer |
+
+Choose Stage based on total volume:
+
+| Volume | Stage |
+|--------|-------|
+| Small (fits in files) | files |
+| Medium/Large | packages |
+
+**Example: Feature axis + files stage**
 ```
 user.go      // all layers for User
 project.go   // all layers for Project
 task.go      // all layers for Task
 ```
 
-**Layer separation first:**
+**Example: Layer axis + files stage**
 ```
 model.go     // all entities
 handler.go   // all handlers
 repository.go // all repositories
 ```
 
-### Stage 2: Internal Separation
+**Example: Layer axis + packages stage**
+```
+entity/
+  user.go
+  project.go
+handler/
+  user.go
+  project.go
+```
 
-After initial separation, each unit may need further separation.
+### Step 2: Internal Separation
 
-**Feature → Layer separation:**
-When implementation volume per Layer grows within a Feature.
+After initial separation, each unit may need further separation using the other Axis.
 
+Choose Stage based on volume within the unit:
+
+| Volume | Stage |
+|--------|-------|
+| Small | inline (no separation) |
+| Medium | files |
+| Large | packages |
+
+**Feature → Layer (files stage):**
 ```
 user/
-  model.go      // Entity layer
-  handler.go    // Handler layer
-  repository.go // Repository layer (interface)
+  model.go
+  handler.go
+  repository.go
 project/
   ...
 ```
 
-**Layer → Feature separation:**
-When implementation volume per Feature grows within a Layer.
-
+**Layer → Feature (files stage):**
 ```
 handler/
   user.go
   project.go
   task.go
-repository/
-  user.go
-  project.go
-  task.go
 ```
 
-### Stage 3: Extract Shared Layers
+### Step 3: Extract Shared Layers
 
-Implementation layers (e.g., DB, external API) can be extracted. Same choice applies: Layer or Feature separation.
+Implementation not tied to domain entities can be extracted.
 
-**Layer separation:**
+Same choices apply:
+- Axis: Layer or Feature
+- Stage: inline, files, or packages
+
+**Layer axis + files stage:**
 ```
-user/
-  ...
-project/
-  ...
-infrastructure/   // grouped by Layer
+infrastructure/
   db.go
   http_client.go
 ```
 
-**Feature separation:**
+**Feature axis + packages stage:**
 ```
-user/
-  ...
-project/
-  ...
-db/               // grouped by Feature (implementation type)
+db/
   mysql.go
   postgres.go
 http_client/
   payment.go
 ```
 
-**Files only (no directory):**
+**Inline (no extraction, keep in place):**
 ```
 user/
   ...
-project/
-  ...
-db.go             // simple, no directory needed
-http_client.go
+  mysql.go      // kept with feature
 ```
 
 ---
 
 ## Decision Criteria
 
+### Axis Selection
+
+| Condition | Axis |
+|-----------|------|
+| Feature count > Layer count | Feature first |
+| Feature count ≤ Layer count | Layer first |
+| Team owns features | Feature |
+| Team owns layers | Layer |
+
+### Stage Selection
+
+| Condition | Stage |
+|-----------|-------|
+| Few items, small code | inline |
+| Multiple items, moderate code | files |
+| Many items or large code | packages |
+| Independent deployment needed | services |
+
 ### When to Separate Further
 
-| Condition | Action |
-|-----------|--------|
-| File > ~300 lines | Consider separation |
-| Multiple distinct responsibilities in file | Separate |
-| Implementation has external dependency | Extract to shared layer |
-
-### Shared Layer Candidates
-
-| Pattern | Extract to |
-|---------|------------|
-| DB connection, queries | `infrastructure/db.go` |
-| HTTP client for external API | `infrastructure/client.go` |
-| Shared utilities | `pkg/` or `internal/` |
+| Signal | Action |
+|--------|--------|
+| File > ~300 lines | Consider next stage |
+| Multiple responsibilities in unit | Separate by other axis |
+| External dependency | Extract to shared layer |
 
 ---
 
 ## Examples
 
-**Example 1: Few Features, Few Layers**
+**Example 1: Small (2 Features, 2 Layers)**
 
-Input: 2 Features (User, Task), 2 Layers (Entity, Repository)
+Axis: Layer (2 ≥ 2), Stage: files
 
-→ Feature ≤ Layer, start with Layer separation:
 ```
-model.go       // User, Task entities
-repository.go  // save/get for all
+model.go
+repository.go
 ```
 
-**Example 2: Many Features, Few Layers**
+**Example 2: Feature-heavy (5 Features, 2 Layers)**
 
-Input: 5 Features (User, Project, Task, Comment, Tag), 2 Layers
+Axis: Feature (5 > 2), Stage: files
 
-→ Feature > Layer, start with Feature separation:
 ```
 user.go
 project.go
@@ -186,11 +215,12 @@ comment.go
 tag.go
 ```
 
-**Example 3: Growth with Shared Layer**
+**Example 3: Large with Shared Layer**
 
-Input: 3 Features, 3 Layers, DB + external API
+Step 1: Feature axis + packages stage
+Step 2: Layer axis + files stage
+Step 3: Layer axis + packages stage
 
-→ Feature separation → Layer separation → Extract shared:
 ```
 user/
   model.go
@@ -198,11 +228,9 @@ user/
   repository.go
 project/
   ...
-task/
-  ...
 infrastructure/
   mysql.go
-  external_api.go
+  http_client.go
 ```
 
 ---

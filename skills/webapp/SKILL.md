@@ -19,14 +19,18 @@ This skill generates web application code from domain models using Clean Archite
    - Check CLAUDE.md for tech stack selection and customizations
    - Use defaults (below) for anything not specified
 
-3. **Generate Code**
+3. **Analyze Layer Structure** (Clean Architecture only)
+   - Use the `analyze-layers` skill to derive layer structure from requirements
+   - Review the proposed layer separation before proceeding
+
+4. **Generate Code**
    - Output to `dist/` directory (keeps source clean)
    - Treat source domain/ as specification, generate equivalent implementation in dist/
    - Apply defaults + project overrides
    - Generate all layers (domain, handler, repository, schema)
    - dist/ should be a complete, runnable application
 
-4. **Verify**
+5. **Verify**
    - Ensure generated code compiles
    - Check for proper error handling
 

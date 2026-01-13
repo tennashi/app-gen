@@ -25,23 +25,6 @@ Outer layers depend on inner layers. Never the reverse.
 - Data is converted to a form convenient for inner layers when crossing boundaries
 - Frameworks and databases are replaceable details
 
-## Growing Layers
-
-Not all layers need to be separated from the start. Grow them as complexity increases.
-
-| Complexity | Layers | When |
-|------------|--------|------|
-| Minimal | Entity + InterfaceAdapter | Small projects, UseCase is inline in Handler |
-| Standard | Entity + UseCase + InterfaceAdapter | Medium projects, UseCase logic grows |
-| Full | + Framework (explicit) | Large projects, need DB abstraction |
-
-Start minimal. Separate when:
-- UseCase logic becomes complex
-- Multiple handlers share same business logic
-- Need to swap database implementations
-
-YAGNI: Don't separate until you need to.
-
 ## Layer Structure Template
 
 Clean Architecture uses `analyze-layers` skill to derive layers dynamically based on:
@@ -76,4 +59,4 @@ Technical infrastructure.
 - HTTP: Router, middleware
 ```
 
-Note: Not all layers are always needed. See "Growing Layers" section above.
+Note: Not all layers are always needed. See `analyze-layers` skill for derivation logic.

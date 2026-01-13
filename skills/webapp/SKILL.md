@@ -23,14 +23,18 @@ This skill generates web application code from domain models using Clean Archite
    - Use the `analyze-layers` skill to derive layer structure from requirements
    - Review the proposed layer separation before proceeding
 
-4. **Generate Code**
+4. **Design Directory Structure**
+   - Apply Stage/Axis rules to layers from `analyze-layers` output
+   - Only include layers that were derived (skip absent layers)
+   - See "Structure Design" section below
+
+5. **Generate Code**
    - Output to `dist/` directory (keeps source clean)
    - Treat source domain/ as specification, generate equivalent implementation in dist/
-   - Apply defaults + project overrides
-   - Generate all layers (domain, handler, repository, schema)
+   - Apply designed structure from step 4
    - dist/ should be a complete, runnable application
 
-5. **Verify**
+6. **Verify**
    - Ensure generated code compiles
    - Check for proper error handling
 
@@ -42,10 +46,10 @@ If not specified in CLAUDE.md, select based on project characteristics.
 
 ### Stage per Layer
 
-Stage is selected **per layer**, not globally.
+Stage is selected **per layer**, applied only to layers present in `analyze-layers` output.
 
-| Layer | Small (1-3 entities) | Medium (4-10) | Large (10+) |
-|-------|---------------------|---------------|-------------|
+| Layer (if present) | Small (1-3 entities) | Medium (4-10) | Large (10+) |
+|--------------------|---------------------|---------------|-------------|
 | Entity | files | packages | packages |
 | UseCase | inline | inline | packages |
 | InterfaceAdapter | files | packages | packages |
@@ -107,32 +111,77 @@ TopLevel: <stage>, <axis>
 - [Onion](references/layers/onion.md)
 - [Three-Tier](references/layers/three-tier.md)
 
-### Default Structure (Clean Architecture)
+### Structure Design (Clean Architecture)
 
+Design directory structure based on `analyze-layers` output.
+
+**Example 1: Entity + InterfaceAdapter** (no UseCase)
+
+analyze-layers output:
 ```markdown
-## Structure
-LayerDefinition: Clean Architecture
-TopLevel: packages, by-layer
-  Entity: files, by-feature
-  UseCase: inline
-  InterfaceAdapter: packages, by-layer, expand
-    Handler: files, by-feature
-    Repository: files, by-feature
+### Entity
+### InterfaceAdapter
+  - Handler (input)
+  - Repository (output)
 ```
 
-Result:
+→ Structure (3 entities, small):
 ```
 dist/
-├── domain/
+├── domain/           # Entity: files
 │   ├── user.go
-│   └── project.go
-├── handler/
+│   └── task.go
+├── handler/          # InterfaceAdapter: files, expand
 │   ├── user.go
-│   └── project.go
+│   └── task.go
 └── repository/
-    ├── repository.go
-    ├── sqlite_user.go
-    └── sqlite_project.go
+    └── sqlite.go
+```
+
+**Example 2: Entity + UseCase + InterfaceAdapter** (full)
+
+analyze-layers output:
+```markdown
+### Entity
+### UseCase
+### InterfaceAdapter
+  - Handler (input)
+  - Repository (output)
+  - Gateway (output)
+```
+
+→ Structure (8 entities, medium):
+```
+dist/
+├── domain/           # Entity: packages
+│   ├── order/
+│   └── product/
+├── usecase/          # UseCase: inline → embedded in handler
+├── handler/          # InterfaceAdapter: packages, expand
+│   ├── web/
+│   └── admin/
+├── repository/
+│   └── postgres.go
+└── gateway/
+    └── payment.go
+```
+
+**Example 3: InterfaceAdapter only** (no domain logic)
+
+analyze-layers output:
+```markdown
+### InterfaceAdapter
+  - Handler (input)
+  - Repository (output)
+```
+
+→ Structure:
+```
+dist/
+├── handler/
+│   └── bookmark.go
+└── repository/
+    └── sqlite.go
 ```
 
 ### API Design

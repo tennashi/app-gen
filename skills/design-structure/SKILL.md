@@ -166,36 +166,7 @@ After initial separation, each unit may need further separation using the other 
 | functions | inline |
 | inline | (none) |
 
-**Examples:**
-
-packages → files:
-```
-task/
-  entity.go
-  handler.go
-  repository.go
-```
-
-files → functions:
-```
-task.go
-  - type Task struct { ... }
-  - func NewTaskHandler() { ... }
-  - func NewTaskRepository() { ... }
-```
-
-files → inline:
-```
-task.go
-  // --- Entity ---
-  type Task struct { ... }
-
-  // --- Handler ---
-  // (handler code directly, no separate function)
-
-  // --- Repository ---
-  // (repository code directly, no separate function)
-```
+See [references/stages/](references/stages/) for examples of each stage.
 
 ### Step 3: Extract Cross-feature Layers
 

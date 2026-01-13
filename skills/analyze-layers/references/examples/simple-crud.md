@@ -1,0 +1,34 @@
+# Example: Simple CRUD (No Invariants)
+
+## Input (CLAUDE.md)
+
+```markdown
+## Application
+
+Simple bookmark manager. No business logic.
+
+## External Interfaces
+
+- HTTP API: CRUD endpoints
+
+## External Dependencies
+
+- SQLite: Bookmark storage
+```
+
+## Domain Analysis
+
+- `domain/Bookmark` has only data fields, no methods → no invariants
+
+## Output
+
+```markdown
+## Layer Structure
+
+### InterfaceAdapter
+Handles external input/output. Entity logic is embedded here.
+
+**Features:**
+- Handler (input): Processes HTTP requests, contains data structures
+- Repository (output): Persists to SQLite
+```

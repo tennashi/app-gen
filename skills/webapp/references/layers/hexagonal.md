@@ -31,3 +31,22 @@ Adapters depend on Ports. Application defines Ports but doesn't know Adapters.
 - Ports are interfaces owned by Application
 - Adapters are interchangeable (test doubles, different implementations)
 - No distinction between "front" and "back" - all external systems are equal
+
+## Layer Structure Template
+
+```markdown
+## Layer Structure
+
+### Application (feature-bound)
+Business logic and use cases.
+
+### Port (feature-bound)
+Interfaces defining how to interact with Application.
+
+### Adapter (feature-bound)
+Implementations connecting external systems to Ports.
+
+**Components:**
+- DrivingAdapter (input): HTTP Controller
+- DrivenAdapter (output): Repository, External API Client
+```

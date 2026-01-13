@@ -40,18 +40,6 @@ This skill generates web application code from domain models using Clean Archite
 
 If not specified in CLAUDE.md, select based on project characteristics.
 
-### Growing Layers
-
-Not all layers need separation from the start. Start minimal, grow as needed.
-
-```
-Minimal:  Entity + InterfaceAdapter (UseCase inline)
-    ↓ complexity grows
-Standard: Entity + UseCase + InterfaceAdapter
-    ↓ need DB abstraction
-Full:     + Framework (explicit)
-```
-
 ### Stage per Layer
 
 Stage is selected **per layer**, not globally.

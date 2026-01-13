@@ -32,7 +32,7 @@ Vertical separation within a Layer. Each Layer defines its own Features independ
    - Based on implementation volume within the unit
 
 4. **Extract Shared Layers**
-   - Identify feature-independent implementation (e.g., infrastructure)
+   - Identify implementation not tied to specific domain entities (e.g., infrastructure)
    - Separate as shared layer
 
 5. **Write to CLAUDE.md**
@@ -112,7 +112,7 @@ user/
   repository.go  // interface
 project/
   ...
-infrastructure/   // shared, feature-independent
+infrastructure/   // shared, not tied to domain entities
   db.go           // DB implementation
   http_client.go  // external API client
 ```

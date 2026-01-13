@@ -64,22 +64,22 @@ For non-Clean Architecture styles, write these static structures to CLAUDE.md.
 ```markdown
 ## Layer Structure
 
-### Domain
+### Domain (feature-bound)
 Business concepts and business rules.
 
-### Application
+### Application (feature-bound)
 Coordinate tasks, delegate to domain.
 
-### Presentation
+### Presentation (feature-bound)
 Display information, interpret user commands.
 
-**Features:**
+**Components:**
 - Handler (input): HTTP request handling
 
-### Infrastructure
+### Infrastructure (feature-bound)
 Technical capabilities.
 
-**Features:**
+**Components:**
 - Repository (output): Persistence
 ```
 
@@ -88,16 +88,16 @@ Technical capabilities.
 ```markdown
 ## Layer Structure
 
-### Application
+### Application (feature-bound)
 Business logic and use cases.
 
-### Port
+### Port (feature-bound)
 Interfaces defining how to interact with Application.
 
-### Adapter
+### Adapter (feature-bound)
 Implementations connecting external systems to Ports.
 
-**Features:**
+**Components:**
 - DrivingAdapter (input): HTTP Controller
 - DrivenAdapter (output): Repository, External API Client
 ```
@@ -107,19 +107,19 @@ Implementations connecting external systems to Ports.
 ```markdown
 ## Layer Structure
 
-### DomainModel
+### DomainModel (feature-bound)
 Entities and business rules.
 
-### DomainServices
+### DomainServices (feature-bound)
 Domain logic spanning multiple entities.
 
-### ApplicationServices
+### ApplicationServices (feature-bound)
 Use case orchestration.
 
-### Infrastructure
+### Infrastructure (feature-bound)
 Persistence, external services, UI.
 
-**Features:**
+**Components:**
 - Handler (input): HTTP request handling
 - Repository (output): Persistence
 ```
@@ -129,19 +129,19 @@ Persistence, external services, UI.
 ```markdown
 ## Layer Structure
 
-### Presentation
+### Presentation (feature-bound)
 User interface, display, input handling.
 
-**Features:**
+**Components:**
 - Handler (input): HTTP request handling
 
-### BusinessLogic
+### BusinessLogic (feature-bound)
 Business rules, validation, processing.
 
-### DataAccess
+### DataAccess (feature-bound)
 Database operations, persistence.
 
-**Features:**
+**Components:**
 - Repository (output): Database operations
 ```
 

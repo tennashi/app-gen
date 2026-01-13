@@ -166,60 +166,22 @@ After initial separation, each unit may need further separation using the other 
 | functions | inline |
 | inline | (none) |
 
-#### When Step 1 = packages
+**Examples:**
 
-**Feature first (packages) → then Layer/Component (files):**
+packages → files:
 ```
 task/
-  entity.go      // Entity×Task
-  handler.go     // InterfaceAdapter/Handler×Task
-  repository.go  // InterfaceAdapter/Repository×Task
-project/
   entity.go
   handler.go
   repository.go
 ```
 
-**Layer first (packages) → then Feature (files):**
+files → functions/inline:
 ```
-entity/
-  task.go
-  project.go
-  comment.go
-interface_adapter/
-  handler/
-    task.go        // Handler×Task
-    project.go     // Handler×Project
-  repository/
-    task.go
-    project.go
-```
-
-#### When Step 1 = files
-
-**Feature first (files) → then Layer/Component (functions or inline):**
-```
-task.go          // All Code Units for Task in one file
-  - type Task struct { ... }           // Entity (inline)
-  - func NewTaskHandler() { ... }      // Handler (functions)
-  - func NewTaskRepository() { ... }   // Repository (functions)
-project.go
-  - type Project struct { ... }
-  - func NewProjectHandler() { ... }
-  - func NewProjectRepository() { ... }
-```
-
-**Layer first (files) → then Feature (functions or inline):**
-```
-entity.go        // All Entities in one file
+task.go
   - type Task struct { ... }
-  - type Project struct { ... }
-handler.go       // All Handlers in one file
   - func NewTaskHandler() { ... }
-  - func NewProjectHandler() { ... }
-repository.go    // All Repositories in one file
   - func NewTaskRepository() { ... }
-  - func NewProjectRepository() { ... }
 ```
 
 ### Step 3: Extract Cross-feature Layers

@@ -291,14 +291,13 @@ Write to project's CLAUDE.md:
 ## Directory Structure
 
 ```
-dist/
-├── user/
-│   ├── model.go
-│   ├── handler.go
-│   └── repository.go
-├── project/
-│   └── ...
-└── infrastructure/
-    └── mysql.go
+user/
+├── model.go
+├── handler.go
+└── repository.go
+project/
+└── ...
+infrastructure/
+└── db.go
 ```
 ```

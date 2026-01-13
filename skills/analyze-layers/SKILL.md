@@ -112,10 +112,9 @@ Write to project's CLAUDE.md:
 
 **Components:** (if Layer has Components)
 - {ComponentName} (input|output): {Description}
-
-**Features:** (for feature-bound Layers)
-- {FeatureName}: {Description}
 ```
+
+Note: Features are not listed (inferred from source code).
 
 ---
 

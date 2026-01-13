@@ -31,7 +31,4 @@ Handles external input/output. Entity logic is embedded here (no separate Entity
 **Components:**
 - Handler (input): Processes HTTP requests, contains data structures
 - Repository (output): Persists to SQLite
-
-**Features:**
-- Bookmark: BookmarkHandler, BookmarkRepository
 ```

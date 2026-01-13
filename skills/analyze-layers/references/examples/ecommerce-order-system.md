@@ -33,18 +33,8 @@ Order management system with multiple entry points.
 ### Entity (feature-bound)
 Encapsulates business rules for Order, Product, User.
 
-**Features:**
-- Order: Confirmation rules, cancellation rules, status transitions
-- Product: Inventory rules, pricing
-- User: Account management
-
 ### UseCase (feature-bound)
 Application-specific business logic shared across interfaces.
-
-**Features:**
-- Order: ConfirmOrder, CancelOrder, GetOrderStatus
-- Product: ListProducts, GetProductDetail
-- User: Authenticate, GetUserProfile
 
 ### InterfaceAdapter (feature-bound)
 Handles external input/output.
@@ -53,11 +43,6 @@ Handles external input/output.
 - Handler (input): Processes HTTP requests
 - Repository (output): Persists data
 - Gateway (output): Communicates with external services
-
-**Features:**
-- Order: OrderHandler, OrderRepository
-- Product: ProductHandler, ProductRepository
-- User: UserHandler, UserRepository, PaymentGateway
 
 ### Framework (cross-feature)
 Technical infrastructure.

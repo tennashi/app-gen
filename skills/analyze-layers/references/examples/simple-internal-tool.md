@@ -28,18 +28,10 @@ Internal TODO app for a small team.
 ### Entity (feature-bound)
 Encapsulates business rules for Task and User.
 
-**Features:**
-- Task: State transitions, overdue detection
-- User: Basic user data
-
 ### InterfaceAdapter (feature-bound)
 Handles external input/output.
 
 **Components:**
 - Handler (input): Processes HTTP requests
 - Repository (output): Persists to SQLite
-
-**Features:**
-- Task: TaskHandler, TaskRepository
-- User: UserHandler, UserRepository
 ```

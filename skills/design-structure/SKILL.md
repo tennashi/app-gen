@@ -89,6 +89,8 @@ Reference:
    - For each separation point, decide Axis and Stage
    - Based on Code Unit count, Git metrics, and estimated complexity
    - **Do NOT consider current directory structure** (derive from requirements only)
+   - **Do NOT pre-consider language-specific constraints** (e.g., Go import cycles)
+     - If implementation fails due to constraints, adjust then
 
 4. **Write to CLAUDE.md**
    - Write designed directory structure to project's CLAUDE.md

@@ -139,13 +139,40 @@ Same choices apply:
 
 **Layer axis + files stage:**
 ```
+user/
+  ...
+project/
+  ...
+infrastructure.go   // single file for all shared implementation
+```
+
+**Layer axis + packages stage:**
+```
+user/
+  ...
+project/
+  ...
 infrastructure/
   db.go
   http_client.go
 ```
 
+**Feature axis + files stage:**
+```
+user/
+  ...
+project/
+  ...
+db.go           // single file
+http_client.go  // single file
+```
+
 **Feature axis + packages stage:**
 ```
+user/
+  ...
+project/
+  ...
 db/
   mysql.go
   postgres.go
@@ -153,11 +180,11 @@ http_client/
   payment.go
 ```
 
-**Inline (no extraction, keep in place):**
+**Inline (no extraction):**
 ```
 user/
   ...
-  mysql.go      // kept with feature
+  mysql.go      // kept with domain entity
 ```
 
 ---

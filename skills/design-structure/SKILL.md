@@ -104,13 +104,23 @@ Expand sublayers to top level instead of grouping under parent directory.
 
 ## Stage Selection
 
-Apply stage based on entity count, only to layers present in input.
+Apply stage based on Layer position and Feature count.
 
-| Layer (if present) | Small (1-3 entities) | Medium (4-10) | Large (10+) |
-|--------------------|---------------------|---------------|-------------|
-| Entity | files | packages | packages |
-| UseCase | inline | inline | packages |
-| InterfaceAdapter | files | packages | packages |
+### By Layer Position
+
+| Layer Position | Rationale | Default Stage |
+|----------------|-----------|---------------|
+| Innermost (depended upon) | Stability matters, separate early | files |
+| Middle | Balance | inline |
+| Outermost (depends on others) | Changes often, start simple | inline |
+
+### By Feature Count
+
+| Feature Count | Adjustment |
+|---------------|------------|
+| 1-3 | Keep default |
+| 4-10 | One stage up (inline → files → packages) |
+| 10+ | packages |
 
 ---
 

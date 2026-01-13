@@ -122,17 +122,28 @@ Write to project's CLAUDE.md:
 
 | Condition | Decision | Rationale |
 |-----------|----------|-----------|
-| Domain logic exists (validation, state transitions) | Separate Entity layer | Testability benefit |
+| Domain logic exists (validation, state transitions) | Separate Entity layer (feature-bound) | Testability benefit |
 | No domain logic (data-only structures) | Entity layer unnecessary | No benefit to separate |
-| Multiple external interfaces sharing logic | Derive UseCase layer | Reusability benefit |
+| Multiple external interfaces sharing logic | Derive UseCase layer (feature-bound) | Reusability benefit |
 | Single external interface | UseCase unnecessary | No benefit to separate |
+| External dependencies exist (DB, HTTP, etc.) | Derive InterfaceAdapter layer (feature-bound) | Dependency isolation |
+| Shared infrastructure needed (connection pools, routers) | Derive Framework layer (cross-feature) | Reusability across Features |
 
 ### Feature Separation
 
 | Condition | Decision | Rationale |
 |-----------|----------|-----------|
-| Multiple external dependencies of same type | List as implementations | Swappability benefit |
-| Single dependency per type | No implementations list | No benefit |
+| Multiple domain entities with distinct rules | Separate Features per entity | Cohesion benefit |
+| Single domain entity | Single Feature | No benefit to separate |
+| Features shared across Layers | List same Features in each Layer | Consistency |
+
+### Component Separation
+
+| Condition | Decision | Rationale |
+|-----------|----------|-----------|
+| Multiple input interfaces (HTTP, gRPC, CLI) | Separate Handler Components | Interface isolation |
+| Multiple output dependencies (DB, cache, API) | Separate Repository/Gateway Components | Dependency isolation |
+| Single input/output | No Component separation | No benefit |
 
 ### Git-based Adjustments (Optional)
 

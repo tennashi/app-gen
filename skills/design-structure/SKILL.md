@@ -156,15 +156,17 @@ interface_adapter/
 
 After initial separation, each unit may need further separation using the other Axis.
 
-**Important:** Each unit independently chooses its Stage based on its own volume.
+**Important:** Step 2 Stage must be lower than Step 1 Stage.
 
-| Volume | Stage |
-|--------|-------|
-| Small | inline (no separation) |
-| Medium | files |
-| Large | packages |
+| Step 1 Stage | Step 2 Options |
+|--------------|----------------|
+| packages | files, functions, inline |
+| files | functions, inline |
+| functions | inline |
 
-**Feature first → then Layer/Component (files stage):**
+#### When Step 1 = packages
+
+**Feature first (packages) → then Layer/Component (files):**
 ```
 task/
   entity.go      // Entity×Task
@@ -176,7 +178,7 @@ project/
   repository.go
 ```
 
-**Layer first → then Feature (files stage):**
+**Layer first (packages) → then Feature (files):**
 ```
 entity/
   task.go
@@ -189,6 +191,33 @@ interface_adapter/
   repository/
     task.go
     project.go
+```
+
+#### When Step 1 = files
+
+**Feature first (files) → then Layer/Component (functions or inline):**
+```
+task.go          // All Code Units for Task in one file
+  - type Task struct { ... }           // Entity (inline)
+  - func NewTaskHandler() { ... }      // Handler (functions)
+  - func NewTaskRepository() { ... }   // Repository (functions)
+project.go
+  - type Project struct { ... }
+  - func NewProjectHandler() { ... }
+  - func NewProjectRepository() { ... }
+```
+
+**Layer first (files) → then Feature (functions or inline):**
+```
+entity.go        // All Entities in one file
+  - type Task struct { ... }
+  - type Project struct { ... }
+handler.go       // All Handlers in one file
+  - func NewTaskHandler() { ... }
+  - func NewProjectHandler() { ... }
+repository.go    // All Repositories in one file
+  - func NewTaskRepository() { ... }
+  - func NewProjectRepository() { ... }
 ```
 
 ### Step 3: Extract Cross-feature Layers

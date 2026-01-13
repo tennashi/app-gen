@@ -284,6 +284,10 @@ For existing codebases (skip for new projects):
 
 ## Output Format
 
+**Output must be faithful to the analysis results.**
+- If Step 1 selected files stage, output must be files (not packages)
+- Do NOT contradict the derived Stage in the final structure
+
 Write to project's CLAUDE.md:
 
 ```markdown

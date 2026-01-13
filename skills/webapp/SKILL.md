@@ -13,7 +13,7 @@ This skill generates web application code from domain models using Clean Archite
 
 1. **Analyze Relationships**
    - Use the `analyze-relations` skill to analyze domain models
-   - Review the inferred relationships before proceeding
+   - Proceed automatically (user can interrupt if issues found)
 
 2. **Write Layer Structure**
    - Clean Architecture: Use `analyze-layers` skill (derives from requirements)

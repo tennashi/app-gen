@@ -89,8 +89,8 @@ Reference:
 
 | Axis | Description |
 |------|-------------|
-| by-layer | Technical responsibility (handler/, repository/) |
-| by-feature | Business capability (user/, order/) |
+| by-layer | Horizontal separation (entity/, usecase/, handler/) |
+| by-feature | Vertical separation within a Layer (user/, project/ or handler/, repository/) |
 
 Reference:
 - [by-layer](references/axes/by-layer.md)

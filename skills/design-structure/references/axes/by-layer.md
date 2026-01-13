@@ -1,19 +1,27 @@
 # By Layer
 
-Partition by technical responsibility.
+Horizontal separation. Partition by Layer.
 
 ## Axis
 
-Group code by what it does technically.
+Group code by Layer (technical responsibility with defined dependency direction).
 
-## Example Names
+## Example
 
-| Layer | Possible Names |
-|-------|---------------|
-| Domain | `domain/`, `model/`, `entity/` |
-| Handler | `handler/`, `controller/`, `api/` |
-| Repository | `repository/`, `store/`, `persistence/` |
-| UseCase | `usecase/`, `service/`, `application/` |
+```
+entity/
+  user.go
+  project.go
+usecase/
+  user.go
+  project.go
+handler/
+  user.go
+  project.go
+repository/
+  user.go
+  project.go
+```
 
 ## Applied to Each Stage
 
@@ -24,23 +32,23 @@ Not applicable. Code is not separated, so axis has no effect.
 ### functions
 
 ```go
-// domain layer
-func newUser(id, name string) User { return User{ID: id, Name: name} }
-func newProject(id, name string) Project { return Project{ID: id, Name: name} }
-
-// repository layer
-func saveUser(db *sql.DB, u User) error { ... }
-func saveProject(db *sql.DB, p Project) error { ... }
+// entity layer
+func newUser(id, name string) User { ... }
+func newProject(id, name string) Project { ... }
 
 // handler layer
 func handleGetUser(w http.ResponseWriter, r *http.Request) { ... }
 func handleGetProject(w http.ResponseWriter, r *http.Request) { ... }
+
+// repository layer
+func saveUser(db *sql.DB, u User) error { ... }
+func saveProject(db *sql.DB, p Project) error { ... }
 ```
 
 ### files
 
 ```
-domain.go      # User, Project structs
+entity.go      # User, Project structs
 handler.go     # handleGetUser, handleGetProject
 repository.go  # saveUser, saveProject
 ```
@@ -48,7 +56,7 @@ repository.go  # saveUser, saveProject
 ### packages
 
 ```
-domain/
+entity/
   user.go
   project.go
 handler/
@@ -61,18 +69,10 @@ repository/
 
 ### services
 
-**Not recommended.** Leads to "distributed monolith" - feature changes require coordinated deployment across multiple services. Prefer by-feature at services stage.
-
-```
-api-gateway/         # all handlers
-  user_handler.go
-  project_handler.go
-domain-service/      # all domain + usecase
-persistence-service/ # all repositories
-```
+**Not recommended.** Leads to "distributed monolith". Prefer by-feature at services stage.
 
 ## Characteristics
 
-- Easy to find all handlers, all repositories
-- Change to one layer affects one location
+- Easy to find all code in a Layer
+- Layer changes contained in one location
 - Feature changes touch multiple directories

@@ -15,6 +15,29 @@ Derives layer structure from application requirements and compares it with the c
 - **Layers are derived**: Not fixed to 4 layers; structure emerges from requirements
 - **YAGNI**: Only separate when benefits outweigh costs
 
+## Definitions
+
+### Layer
+
+Horizontal separation. Partitions by technical responsibility with defined dependency direction.
+
+Examples: Entity, UseCase, InterfaceAdapter
+
+### Feature
+
+Vertical separation within a Layer. Each Layer defines its own Features independently.
+
+```
+Layer: Entity
+  └─ Features: User, Project, Order
+
+Layer: UseCase
+  └─ Features: CreateUser, CreateProject, ...
+
+Layer: InterfaceAdapter
+  └─ Features: Handler, Repository, Gateway
+```
+
 ## Workflow
 
 1. **Read Requirements**

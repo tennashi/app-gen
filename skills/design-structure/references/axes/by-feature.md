@@ -1,18 +1,30 @@
 # By Feature
 
-Partition by business capability.
+Vertical separation within a Layer. Partition by Feature.
 
 ## Axis
 
-Group code by what business function it serves.
+Group code by Feature. Each Layer defines its own Features independently.
 
-## Example Names
+Examples:
+- Entity Layer → User, Project, Order
+- UseCase Layer → CreateUser, CreateProject, ...
+- InterfaceAdapter Layer → Handler, Repository, Gateway
 
-Based on domain entities or business capabilities:
-- `user/`
-- `project/`
-- `billing/`
-- `notification/`
+## Example
+
+```
+user/
+  entity.go
+  usecase.go
+  handler.go
+  repository.go
+project/
+  entity.go
+  usecase.go
+  handler.go
+  repository.go
+```
 
 ## Applied to Each Stage
 
@@ -24,12 +36,12 @@ Not applicable. Code is not separated, so axis has no effect.
 
 ```go
 // user feature
-func newUser(id, name string) User { return User{ID: id, Name: name} }
+func newUser(id, name string) User { ... }
 func saveUser(db *sql.DB, u User) error { ... }
 func handleGetUser(w http.ResponseWriter, r *http.Request) { ... }
 
 // project feature
-func newProject(id, name string) Project { return Project{ID: id, Name: name} }
+func newProject(id, name string) Project { ... }
 func saveProject(db *sql.DB, p Project) error { ... }
 func handleGetProject(w http.ResponseWriter, r *http.Request) { ... }
 ```
@@ -45,11 +57,11 @@ project.go   # Project struct, saveProject, handleGetProject
 
 ```
 user/
-  domain.go
+  entity.go
   handler.go
   repository.go
 project/
-  domain.go
+  entity.go
   handler.go
   repository.go
 ```
@@ -58,18 +70,18 @@ project/
 
 ```
 user-service/
-  domain/
+  entity/
   handler/
   repository/
 project-service/
-  domain/
+  entity/
   handler/
   repository/
 ```
 
 ## Characteristics
 
-- Easy to find everything about a feature
+- Easy to find everything about a Feature
 - Feature changes contained in one location
-- Harder to see all handlers, all repositories
-- Better for team ownership per feature
+- Harder to see all code in a Layer
+- Better for team ownership per Feature

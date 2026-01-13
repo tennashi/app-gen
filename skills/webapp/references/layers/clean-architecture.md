@@ -2,7 +2,7 @@
 
 By Robert C. Martin (2017).
 
-## Layer Definition
+## Layer Definition (Web Application Example)
 
 | Layer | Responsibility | Depends On |
 |-------|---------------|------------|
@@ -10,6 +10,8 @@ By Robert C. Martin (2017).
 | UseCase | Application-specific business rules | Entity |
 | InterfaceAdapter | Data conversion (Handler, Repository, Gateway) | UseCase, Entity |
 | Framework | External tools (DB, Web, UI) | InterfaceAdapter |
+
+Note: Layer names and components vary by application type. This is one interpretation for web applications.
 
 ## Dependency Direction
 

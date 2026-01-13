@@ -92,18 +92,16 @@ repository.go // all repositories
 **Example: Layer axis + packages stage**
 ```
 entity/
-  user.go
-  project.go
 handler/
-  user.go
-  project.go
+repository/
 ```
+(Internal structure decided in Step 2)
 
 ### Step 2: Internal Separation
 
 After initial separation, each unit may need further separation using the other Axis.
 
-Choose Stage based on volume within the unit:
+**Important:** Each unit independently chooses its Stage based on its own volume.
 
 | Volume | Stage |
 |--------|-------|
@@ -131,60 +129,65 @@ handler/
 
 ### Step 3: Extract Shared Layers
 
-Implementation not tied to domain entities can be extracted.
+Layers not sharing Features with domain Layers can be extracted independently.
 
-Same choices apply:
-- Axis: Layer or Feature
-- Stage: inline, files, or packages
+**Key insight:** Layers that share common Features (e.g., Entity, Handler, Repository all have User, Project, Task) can be grouped by Feature. Layers with different Features (e.g., Framework with DB, HTTP) remain independent.
 
-**Layer axis + files stage:**
+**Example analysis:**
+```
+entity.go      // Features: User, Project, Task
+handler.go     // Features: User, Project, Task
+repository.go  // Features: User, Project, Task
+framework.go   // Features: DB, HTTP (different!)
+```
+
+Entity, Handler, Repository share Features → can group by Feature
+Framework has different Features → remains independent
+
+**After grouping by Feature:**
+```
+user/
+  model.go
+  handler.go
+  repository.go
+project/
+  ...
+framework.go   // stays independent (different Features)
+```
+
+**Or with packages stage for Framework:**
 ```
 user/
   ...
 project/
   ...
-infrastructure.go   // single file for all shared implementation
-```
-
-**Layer axis + packages stage:**
-```
-user/
-  ...
-project/
-  ...
-infrastructure/
+framework/
   db.go
-  http_client.go
+  http.go
 ```
 
-**Feature axis + files stage:**
+### Grouping Rules
+
+Grouping is the inverse of separation. Layers can be grouped when:
+
+| Condition | Can Group? |
+|-----------|------------|
+| Layers share common Features | Yes |
+| Layers have different Features | No (remain independent) |
+
+**Grouped (common Features):**
+```
+user/           // Entity, Handler, Repository for User
+  model.go
+  handler.go
+  repository.go
+```
+
+**Not grouped (different Features):**
 ```
 user/
   ...
-project/
-  ...
-db.go           // single file
-http_client.go  // single file
-```
-
-**Feature axis + packages stage:**
-```
-user/
-  ...
-project/
-  ...
-db/
-  mysql.go
-  postgres.go
-http_client/
-  payment.go
-```
-
-**Inline (no extraction):**
-```
-user/
-  ...
-  mysql.go      // kept with domain entity
+infrastructure.go   // DB, HTTP - different Features
 ```
 
 ---
@@ -242,12 +245,30 @@ comment.go
 tag.go
 ```
 
-**Example 3: Large with Shared Layer**
+**Example 3: Large with Independent Layer**
 
-Step 1: Feature axis + packages stage
-Step 2: Layer axis + files stage
-Step 3: Layer axis + packages stage
+Layers: Entity, Handler, Repository (share Features: User, Project), Infrastructure (Features: DB, HTTP)
 
+Step 1: Layer axis + files stage
+```
+entity.go      // User, Project
+handler.go     // User, Project
+repository.go  // User, Project
+infrastructure.go  // DB, HTTP
+```
+
+Step 2: Group layers with common Features by Feature
+```
+user/
+  model.go
+  handler.go
+  repository.go
+project/
+  ...
+infrastructure.go  // different Features, stays independent
+```
+
+Step 3: Infrastructure chooses packages stage independently
 ```
 user/
   model.go
@@ -256,8 +277,8 @@ user/
 project/
   ...
 infrastructure/
-  mysql.go
-  http_client.go
+  db.go
+  http.go
 ```
 
 ---

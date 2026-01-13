@@ -21,11 +21,21 @@ Derives layer structure from application requirements and compares it with the c
 
 Horizontal separation. Partitions by technical responsibility with defined dependency direction.
 
-Examples: Entity, UseCase, InterfaceAdapter
+**Types:**
+- **Feature-bound**: Has Code Units per Feature. Example: Entity, UseCase, InterfaceAdapter
+- **Cross-feature**: Independent of Features. Example: Framework, Config, Middleware
 
 ### Feature
 
-Vertical separation within a Layer. Each Layer defines its own Features independently.
+Vertical separation by domain/business concern. Orthogonal to Layer (shared across Layers).
+
+Examples: User, Project, Order, Task
+
+### Component
+
+Technical subdivision within a Layer. No dependency direction between Components (parallel).
+
+Examples: Handler, Repository, Gateway, Presenter
 
 ```
 Layer: Entity
@@ -35,7 +45,8 @@ Layer: UseCase
   └─ Features: CreateUser, CreateProject, ...
 
 Layer: InterfaceAdapter
-  └─ Features: Handler, Repository, Gateway
+  └─ Components: Handler (input), Repository (output), Gateway (output)
+  └─ Features: User, Project, Order (shared with Entity)
 ```
 
 ## Workflow
@@ -93,12 +104,14 @@ Write to project's CLAUDE.md:
 ```markdown
 ## Layer Structure
 
-### {LayerName}
+### {LayerName} (feature-bound|cross-feature)
 {Responsibility description}
 
-**Features:**
-- {FeatureName} (input|output): {Description}
-  - Implementations: {impl1}, {impl2}
+**Components:** (if Layer has Components)
+- {ComponentName} (input|output): {Description}
+
+**Features:** (for feature-bound Layers)
+- {FeatureName}: {Description}
 ```
 
 ---

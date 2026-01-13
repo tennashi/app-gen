@@ -14,10 +14,41 @@ Designs directory structure by iteratively deciding how to separate code. Each s
 ## Definitions
 
 ### Layer
-Horizontal separation. Partitions by technical responsibility with defined dependency direction.
+Horizontal axis. Partitions by technical responsibility with defined dependency direction.
+
+**Types:**
+- **Feature-bound**: Has Code Units per Feature. Example: Entity, InterfaceAdapter
+- **Cross-feature**: Independent of Features. Example: Framework, Config, Middleware
 
 ### Feature
-Vertical separation within a Layer. Each Layer defines its own Features independently.
+Vertical axis. Partitions by domain/business concern. Orthogonal to Layer.
+Example: Task, Project, User, Order
+
+### Component
+Technical subdivision within a Layer. No dependency direction between Components (parallel).
+Example: Handler, Repository, Gateway (all within InterfaceAdapter Layer)
+
+### Code Unit
+Intersection of Layer (or Component) × Feature. The actual code to be organized.
+Example: TaskEntity, TaskHandler, TaskRepository
+
+```
+Feature-bound Layers:
+                          |  Task  | Project | Comment |
+--------------------------|--------|---------|---------|
+Entity                    |   ●    |    ●    |    ●    |
+InterfaceAdapter/Handler  |   ●    |    ●    |    ●    |
+InterfaceAdapter/Repository|  ●    |    ●    |    ●    |
+
+Cross-feature Layers:
+                          |   DB   |  HTTP   |  Logger |
+--------------------------|--------|---------|---------|
+Framework                 |   ●    |    ●    |    ●    |
+```
+
+Note:
+- Handler and Repository are Components within InterfaceAdapter Layer
+- Cross-feature Layers have their own subdivision (not Features)
 
 ### Axis
 Direction of separation: by-layer or by-feature.
@@ -48,7 +79,8 @@ Reference:
 
 1. **Read Layer Structure**
    - Parse CLAUDE.md for `## Layer Structure` section
-   - Count Features (domain entities) and Layers
+   - Count Layers, Components (horizontal) and Features (vertical)
+   - Identify the (Layer/Component) × Feature matrix
 
 2. **Derive Separation Decisions**
    - For each separation point, decide Axis and Stage
@@ -63,22 +95,26 @@ Reference:
 
 Each separation decision = **Axis** (direction) × **Stage** (granularity)
 
+The (Layer/Component) × Feature matrix is sliced along one axis, then optionally subdivided along the other.
+
+**Note:** When counting for Axis selection, Components count as separate rows (like Layers).
+
 ### Step 0: Single File
 
 Everything starts in one file (Stage: inline).
 
 ```
-main.go
+main.go   // all Code Units in one file
 ```
 
 ### Step 1: Initial Separation
 
-Choose Axis based on counts:
+Choose Axis based on matrix shape:
 
 | Condition | Axis |
 |-----------|------|
-| Feature count > Layer count | Feature |
-| Feature count ≤ Layer count | Layer |
+| Feature count > (Layer + Component) count | Feature (slice columns) |
+| Feature count ≤ (Layer + Component) count | Layer (slice rows) |
 
 Choose Stage based on total volume:
 
@@ -87,25 +123,26 @@ Choose Stage based on total volume:
 | Small (fits in files) | files |
 | Medium/Large | packages |
 
-**Example: Feature axis + files stage**
+**Example: Feature axis + files stage** (slice by columns)
 ```
-user.go      // all layers for User
-project.go   // all layers for Project
-task.go      // all layers for Task
+task.go      // Entity×Task, Handler×Task, Repository×Task
+project.go   // Entity×Project, Handler×Project, Repository×Project
+comment.go   // ...
 ```
 
-**Example: Layer axis + files stage**
+**Example: Layer axis + files stage** (slice by rows)
 ```
-model.go     // all entities
-handler.go   // all handlers
-repository.go // all repositories
+entity.go     // Entity×Task, Entity×Project, Entity×Comment, ...
+handler.go    // Handler×Task, Handler×Project, ...
+repository.go // Repository×Task, Repository×Project, ...
 ```
 
 **Example: Layer axis + packages stage**
 ```
 entity/
-handler/
-repository/
+interface_adapter/
+  handler/
+  repository/
 ```
 (Internal structure decided in Step 2)
 
@@ -121,59 +158,56 @@ After initial separation, each unit may need further separation using the other 
 | Medium | files |
 | Large | packages |
 
-**Feature → Layer (files stage):**
+**Feature first → then Layer/Component (files stage):**
 ```
-user/
-  model.go
+task/
+  entity.go      // Entity×Task
+  handler.go     // InterfaceAdapter/Handler×Task
+  repository.go  // InterfaceAdapter/Repository×Task
+project/
+  entity.go
   handler.go
   repository.go
-project/
-  ...
 ```
 
-**Layer → Feature (files stage):**
+**Layer first → then Feature (files stage):**
 ```
-handler/
-  user.go
-  project.go
+entity/
   task.go
+  project.go
+  comment.go
+interface_adapter/
+  handler/
+    task.go        // Handler×Task
+    project.go     // Handler×Project
+  repository/
+    task.go
+    project.go
 ```
 
-### Step 3: Extract Shared Layers
+### Step 3: Extract Cross-feature Layers
 
-Layers not sharing Features with domain Layers can be extracted independently.
+Cross-feature Layers are separated independently from Feature-bound Layers.
 
-**Key insight:** Layers that share common Features (e.g., Entity, Handler, Repository all have User, Project, Task) can be grouped by Feature. Layers with different Features (e.g., Framework with DB, HTTP) remain independent.
-
-**Example analysis:**
+**Layer classification:**
 ```
-entity.go      // Features: User, Project, Task
-handler.go     // Features: User, Project, Task
-repository.go  // Features: User, Project, Task
-framework.go   // Features: DB, HTTP (different!)
+Feature-bound:              Cross-feature:
+- Entity                    - Framework
+- InterfaceAdapter
 ```
 
-Entity, Handler, Repository share Features → can group by Feature
-Framework has different Features → remains independent
+- Feature-bound Layers share Features → can group by Feature
+- Cross-feature Layers have their own subdivision → extracted independently
 
-**After grouping by Feature:**
+**Result:**
 ```
-user/
-  model.go
+task/                      // Feature-bound, grouped by Feature
+  entity.go
   handler.go
   repository.go
 project/
   ...
-framework.go   // stays independent (different Features)
-```
-
-**Or with packages stage for Framework:**
-```
-user/
-  ...
-project/
-  ...
-framework/
+framework/                 // Cross-feature, separated independently
   db.go
   http.go
 ```
@@ -186,17 +220,17 @@ Grouping is the inverse of separation.
 
 | Condition | Can Group? |
 |-----------|------------|
-| Layers share common Features | Yes |
-| Layers have different Features | No (remain independent) |
+| Feature-bound Layers/Components | Yes (by Feature) |
+| Cross-feature Layers | No (separate independently) |
 
 **Should group?**
 
 | Condition | Action |
 |-----------|--------|
-| Feature changes > Layer changes | Group |
-| Team ownership by Feature | Group |
-| Feature count growing | Group |
-| Need to see Layer across Features | Don't group |
+| Feature changes > Layer changes | Group by Feature |
+| Team ownership by Feature | Group by Feature |
+| Feature count growing | Group by Feature |
+| Need to see Layer across Features | Group by Layer |
 
 ---
 
@@ -206,8 +240,8 @@ Grouping is the inverse of separation.
 
 | Condition | Axis |
 |-----------|------|
-| Feature count > Layer count | Feature first |
-| Feature count ≤ Layer count | Layer first |
+| Feature count > (Layer + Component) count | Feature first (slice columns) |
+| Feature count ≤ (Layer + Component) count | Layer first (slice rows) |
 | Team owns features | Feature |
 | Team owns layers | Layer |
 
@@ -226,8 +260,9 @@ Grouping is the inverse of separation.
 | Signal | Action |
 |--------|--------|
 | File > ~300 lines | Consider next stage |
-| Multiple responsibilities in unit | Separate by other axis |
-| External dependency | Extract to shared layer |
+| Multiple Code Units in one file | Separate by other axis |
+| Cross-feature Layer exists | Extract independently |
+| Layer has multiple Components | Separate Components within Layer |
 
 ---
 

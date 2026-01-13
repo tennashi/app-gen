@@ -25,10 +25,13 @@ Simple bookmark manager. No business logic.
 ```markdown
 ## Layer Structure
 
-### InterfaceAdapter
-Handles external input/output. Entity logic is embedded here.
+### InterfaceAdapter (feature-bound)
+Handles external input/output. Entity logic is embedded here (no separate Entity layer needed).
 
-**Features:**
+**Components:**
 - Handler (input): Processes HTTP requests, contains data structures
 - Repository (output): Persists to SQLite
+
+**Features:**
+- Bookmark: BookmarkHandler, BookmarkRepository
 ```

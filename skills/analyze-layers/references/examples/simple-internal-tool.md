@@ -25,13 +25,21 @@ Internal TODO app for a small team.
 ```markdown
 ## Layer Structure
 
-### Entity
+### Entity (feature-bound)
 Encapsulates business rules for Task and User.
 
-### InterfaceAdapter
+**Features:**
+- Task: State transitions, overdue detection
+- User: Basic user data
+
+### InterfaceAdapter (feature-bound)
 Handles external input/output.
 
-**Features:**
+**Components:**
 - Handler (input): Processes HTTP requests
 - Repository (output): Persists to SQLite
+
+**Features:**
+- Task: TaskHandler, TaskRepository
+- User: UserHandler, UserRepository
 ```

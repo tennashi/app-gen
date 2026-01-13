@@ -30,21 +30,39 @@ Order management system with multiple entry points.
 ```markdown
 ## Layer Structure
 
-### Entity
+### Entity (feature-bound)
 Encapsulates business rules for Order, Product, User.
 
-### UseCase
-Application-specific business logic shared across interfaces.
-- Order confirmation, cancellation, status transitions
+**Features:**
+- Order: Confirmation rules, cancellation rules, status transitions
+- Product: Inventory rules, pricing
+- User: Account management
 
-### InterfaceAdapter
-Handles external input/output.
+### UseCase (feature-bound)
+Application-specific business logic shared across interfaces.
 
 **Features:**
+- Order: ConfirmOrder, CancelOrder, GetOrderStatus
+- Product: ListProducts, GetProductDetail
+- User: Authenticate, GetUserProfile
+
+### InterfaceAdapter (feature-bound)
+Handles external input/output.
+
+**Components:**
 - Handler (input): Processes HTTP requests
-  - Implementations: WebHandler, AdminHandler, BatchJob
 - Repository (output): Persists data
-  - Implementations: PostgresRepository, RedisCache
 - Gateway (output): Communicates with external services
-  - Implementations: PaymentGateway
+
+**Features:**
+- Order: OrderHandler, OrderRepository
+- Product: ProductHandler, ProductRepository
+- User: UserHandler, UserRepository, PaymentGateway
+
+### Framework (cross-feature)
+Technical infrastructure.
+
+**Components:**
+- DB: PostgreSQL connection, Redis connection
+- HTTP: Router, middleware
 ```

@@ -180,27 +180,23 @@ framework/
 
 ### Grouping Rules
 
-Grouping is the inverse of separation. Layers can be grouped when:
+Grouping is the inverse of separation.
+
+**Can group?**
 
 | Condition | Can Group? |
 |-----------|------------|
 | Layers share common Features | Yes |
 | Layers have different Features | No (remain independent) |
 
-**Grouped (common Features):**
-```
-user/           // Entity, Handler, Repository for User
-  model.go
-  handler.go
-  repository.go
-```
+**Should group?**
 
-**Not grouped (different Features):**
-```
-user/
-  ...
-infrastructure.go   // DB, HTTP - different Features
-```
+| Condition | Action |
+|-----------|--------|
+| Feature changes > Layer changes | Group |
+| Team ownership by Feature | Group |
+| Feature count growing | Group |
+| Need to see Layer across Features | Don't group |
 
 ---
 

@@ -243,13 +243,6 @@ Write to project's CLAUDE.md:
 ## Directory Structure
 
 ```
-user/
-├── model.go
-├── handler.go
-└── repository.go
-project/
-└── ...
-infrastructure/
-└── db.go
+{directory or file tree based on separation decisions}
 ```
 ```

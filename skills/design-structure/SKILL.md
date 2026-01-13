@@ -89,9 +89,11 @@ Reference:
 3. **Derive Separation Decisions**
    - For each separation point, decide Axis and Stage
    - Based on Code Unit count, Git metrics, and estimated complexity
+   - **Do NOT consider current directory structure** (derive from requirements only)
 
 4. **Write to CLAUDE.md**
    - Write designed directory structure to project's CLAUDE.md
+   - If differs from current structure, note as proposed change
 
 ---
 

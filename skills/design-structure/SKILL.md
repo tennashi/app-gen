@@ -82,11 +82,15 @@ Reference:
    - Count Layers, Components (horizontal) and Features (vertical)
    - Identify the (Layer/Component) × Feature matrix
 
-2. **Derive Separation Decisions**
-   - For each separation point, decide Axis and Stage
-   - Based on counts and implementation volume
+2. **Analyze Git History** (for existing codebases)
+   - Read Git log for scale metrics (total lines, commits/month, contributors)
+   - Use metrics to inform Stage selection
 
-3. **Write to CLAUDE.md**
+3. **Derive Separation Decisions**
+   - For each separation point, decide Axis and Stage
+   - Based on Code Unit count, Git metrics, and estimated complexity
+
+4. **Write to CLAUDE.md**
    - Write designed directory structure to project's CLAUDE.md
 
 ---
@@ -268,9 +272,9 @@ Grouping is the inverse of separation.
 - Default to files stage
 - Only use packages when files become unwieldy
 
-### Git-based Scale Analysis (Optional)
+### Git-based Scale Analysis
 
-When existing codebase available:
+For existing codebases (skip for new projects):
 
 | Metric | Threshold | Implication |
 |--------|-----------|-------------|

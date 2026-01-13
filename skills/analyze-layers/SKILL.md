@@ -62,11 +62,14 @@ Layer: InterfaceAdapter
 3. **Derive Layer Structure**
    - Apply derivation logic based on requirements and domain analysis
 
-4. **Compare with Current Structure**
-   - Read current code structure
-   - Optionally read Git log for context (committer count, change frequency)
+4. **Analyze Git History** (for existing codebases)
+   - Read Git log for scale metrics (committer count, change frequency, total lines)
+   - Apply Git-based adjustments to derivation
 
-5. **Write to CLAUDE.md**
+5. **Compare with Current Structure**
+   - Read current code structure
+
+6. **Write to CLAUDE.md**
    - Write derived layer structure to project's CLAUDE.md
    - If structure differs from current, include proposed changes
 
@@ -145,12 +148,15 @@ Write to project's CLAUDE.md:
 | Multiple output dependencies (DB, cache, API) | Separate Repository/Gateway Components | Dependency isolation |
 | Single input/output | No Component separation | No benefit |
 
-### Git-based Adjustments (Optional)
+### Git-based Adjustments
+
+For existing codebases (skip for new projects):
 
 | Condition | Adjustment |
 |-----------|------------|
-| Many committers | Prefer clearer boundaries for parallel development |
+| Many committers (3+) | Prefer clearer Layer/Component boundaries |
 | High change frequency in specific area | Prioritize separating that area |
+| Large codebase (5000+ lines) | More granular Layer separation |
 | Long-lived repository | Favor stability-oriented separation |
 
 ---

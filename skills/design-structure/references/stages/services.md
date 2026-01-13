@@ -10,20 +10,45 @@ Separation by deploying as independent services.
 | Enforcement | Very strong (API contract) |
 | Suitable for | Large projects, independent scaling/deployment |
 
-## Example
+## Examples
+
+### Feature first (services)
+
+Each service owns all Layers for one Feature:
 
 ```
-system/
-├── user-service/
-│   ├── main.go
-│   └── ...
-├── project-service/
-│   ├── main.go
-│   └── ...
-└── api-gateway/
-    ├── main.go
-    └── ...
+user-service/
+  main.go
+  entity/
+  handler/
+  repository/
+project-service/
+  main.go
+  entity/
+  handler/
+  repository/
+api-gateway/
+  main.go
 ```
+
+Internal separation: packages, files, functions, or inline
+
+### Layer first (services) - Less common
+
+Shared services by technical responsibility:
+
+```
+api-service/        // All Handlers
+  main.go
+  user_handler.go
+  project_handler.go
+domain-service/     // All Entities + UseCases
+  main.go
+data-service/       // All Repositories
+  main.go
+```
+
+Internal separation: packages, files, functions, or inline
 
 ## Communication
 

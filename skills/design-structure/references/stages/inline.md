@@ -1,59 +1,62 @@
 # Inline
 
-Embed code within adjacent layer instead of separating.
+No separation - code is embedded directly without function or file boundaries.
 
 ## Characteristics
 
 | Aspect | Value |
 |--------|-------|
 | Boundary | None |
-| Enforcement | Convention |
-| Suitable for | Small projects, or layers that don't need separation |
+| Enforcement | Convention (comments, ordering) |
+| Suitable for | Very small projects, prototypes |
 
-## Use Cases
+## Examples
 
-### 1. Small projects - all in one function
+### All Code Units inline (single file)
 
 ```go
+// main.go
+
 func main() {
-    // Domain
-    user := User{Name: "alice"}
+    // --- Entity ---
+    type User struct {
+        ID   string
+        Name string
+    }
+    user := User{ID: "1", Name: "alice"}
 
-    // Persistence
-    db.Save(user)
+    // --- Repository ---
+    db.Exec("INSERT INTO users (id, name) VALUES (?, ?)", user.ID, user.Name)
 
-    // Presentation
+    // --- Handler ---
     json.NewEncoder(w).Encode(user)
 }
 ```
 
-### 2. Layer embedding - UseCase in Handler
+### Layer embedding - UseCase in Handler
 
 ```go
-// UseCase logic is inline within Handler
 func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
     var req CreateUserRequest
     json.NewDecoder(r.Body).Decode(&req)
 
-    // UseCase logic (inline, not in separate file)
+    // UseCase logic (inline, not in separate function)
     if req.Name == "" {
         http.Error(w, "name required", http.StatusBadRequest)
         return
     }
     user := domain.NewUser(uuid.New().String(), req.Name)
 
-    // Repository call
     h.repo.Create(r.Context(), user)
     respondJSON(w, http.StatusCreated, user)
 }
 ```
 
-### 3. Layer embedding - Framework in Repository
+### Layer embedding - Framework in Repository
 
 ```go
-// Framework (sqlite) is inline within Repository implementation
 func (r *SQLiteUserRepository) Create(ctx context.Context, u *domain.User) error {
-    // sqlite-specific code inline
+    // Framework (sqlite) inline within Repository
     _, err := r.db.ExecContext(ctx,
         "INSERT INTO users (id, name) VALUES (?, ?)",
         u.ID, u.Name)
@@ -63,8 +66,7 @@ func (r *SQLiteUserRepository) Create(ctx context.Context, u *domain.User) error
 
 ## When to use
 
-- Exploring an idea
+- Exploring an idea / prototyping
 - Single-file scripts
 - Layers that are simple enough to not need separation
-- UseCase layer in small/medium projects
-- Framework implementations within Repository
+- Internal separation within functions stage

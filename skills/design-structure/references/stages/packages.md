@@ -10,18 +10,45 @@ Separation by directories/packages with explicit imports.
 | Enforcement | Strong (import required, visibility rules) |
 | Suitable for | Medium to large projects |
 
-## Example
+## Examples
+
+### Feature first (packages)
+
+Each package contains all Layers for one Feature:
 
 ```
+user/
+  entity.go      // Entity×User
+  handler.go     // Handler×User
+  repository.go  // Repository×User
 project/
-├── main.go
-├── domain/
-│   └── user.go
-├── handler/
-│   └── user.go
-└── repository/
-    └── user.go
+  entity.go      // Entity×Project
+  handler.go     // Handler×Project
+  repository.go  // Repository×Project
 ```
+
+Internal separation: files, functions, or inline
+
+### Layer first (packages)
+
+Each package contains all Features for one Layer:
+
+```
+entity/
+  user.go        // Entity×User
+  project.go     // Entity×Project
+  task.go        // Entity×Task
+handler/
+  user.go        // Handler×User
+  project.go     // Handler×Project
+  task.go        // Handler×Task
+repository/
+  user.go
+  project.go
+  task.go
+```
+
+Internal separation: files, functions, or inline
 
 ## When to use
 
@@ -29,3 +56,4 @@ project/
 - Enforce dependency direction via imports
 - Multiple teams working on different areas
 - Reusable packages
+- Code Units > 30

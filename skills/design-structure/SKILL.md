@@ -27,7 +27,8 @@ Granularity of separation:
 
 | Stage | Description | Example |
 |-------|-------------|---------|
-| inline | No separation | all in `main.go` |
+| inline | No separation | all in `main()` |
+| functions | Split into functions | `newUser()`, `saveUser()` |
 | files | Split into files | `user.go`, `handler.go` |
 | packages | Split into directories | `user/`, `handler/` |
 | services | Split into services | `user-service/` |
@@ -208,6 +209,7 @@ infrastructure.go   // DB, HTTP - different Features
 | Condition | Stage |
 |-----------|-------|
 | Few items, small code | inline |
+| Multiple items, still small code | functions |
 | Multiple items, moderate code | files |
 | Many items or large code | packages |
 | Independent deployment needed | services |

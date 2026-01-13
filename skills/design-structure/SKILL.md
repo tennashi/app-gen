@@ -103,8 +103,9 @@ repository/
 
 ### Stage 3: Extract Shared Layers
 
-Implementation that doesn't belong to any Feature is extracted.
+Implementation layers (e.g., DB, external API) can be extracted. Same choice applies: Layer or Feature separation.
 
+**Layer separation (shared infrastructure):**
 ```
 user/
   model.go
@@ -112,9 +113,23 @@ user/
   repository.go  // interface
 project/
   ...
-infrastructure/   // shared, not tied to domain entities
-  db.go           // DB implementation
-  http_client.go  // external API client
+infrastructure/   // shared across domain entities
+  db.go           // all DB implementations
+  http_client.go  // all external API clients
+```
+
+**Feature separation (per-entity infrastructure):**
+```
+user/
+  model.go
+  handler.go
+  repository.go
+  infrastructure/
+    mysql.go      // User's DB implementation
+project/
+  ...
+  infrastructure/
+    mysql.go      // Project's DB implementation
 ```
 
 ---

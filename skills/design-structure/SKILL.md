@@ -22,6 +22,10 @@ Vertical separation within a Layer. Each Layer defines its own Features independ
 ### Axis
 Direction of separation: by-layer or by-feature.
 
+Reference:
+- [By Layer](references/axes/by-layer.md)
+- [By Feature](references/axes/by-feature.md)
+
 ### Stage
 Granularity of separation:
 
@@ -32,6 +36,13 @@ Granularity of separation:
 | files | Split into files | `user.go`, `handler.go` |
 | packages | Split into directories | `user/`, `handler/` |
 | services | Split into services | `user-service/` |
+
+Reference:
+- [Inline](references/stages/inline.md)
+- [Functions](references/stages/functions.md)
+- [Files](references/stages/files.md)
+- [Packages](references/stages/packages.md)
+- [Services](references/stages/services.md)
 
 ## Workflow
 

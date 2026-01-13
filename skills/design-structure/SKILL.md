@@ -7,11 +7,26 @@ description: Design directory structure from layer structure. Applies Stage/Axis
 
 ## Overview
 
-Transforms layer structure (from `analyze-layers`) into concrete directory structure by applying Stage and Axis rules.
+Transforms layer structure into concrete directory structure by applying Stage and Axis rules. Reads from and writes to project's CLAUDE.md.
+
+## Workflow
+
+1. **Read Layer Structure**
+   - Parse CLAUDE.md for `## Layer Structure` section (written by `analyze-layers`)
+
+2. **Count Entities**
+   - Search codebase for entity count to determine stage
+
+3. **Apply Stage/Axis Rules**
+   - Select stage based on entity count and layer
+   - Select axis based on team structure
+
+4. **Write to CLAUDE.md**
+   - Write designed directory structure to project's CLAUDE.md
 
 ## Input
 
-Output from `analyze-layers`:
+Read from project's CLAUDE.md (written by `analyze-layers`):
 
 ```markdown
 ## Layer Structure
@@ -31,6 +46,8 @@ Output from `analyze-layers`:
 ```
 
 ## Output
+
+Write to project's CLAUDE.md:
 
 ```markdown
 ## Directory Structure
@@ -111,7 +128,7 @@ Apply stage based on entity count, only to layers present in input.
 
 **Example 1: Entity + InterfaceAdapter** (no UseCase)
 
-Input (analyze-layers output):
+CLAUDE.md (Layer Structure from analyze-layers):
 ```markdown
 ### Entity
 ### InterfaceAdapter
@@ -119,7 +136,10 @@ Input (analyze-layers output):
   - Repository (output)
 ```
 
-Output (3 entities, small):
+→ Write to CLAUDE.md (3 entities, small):
+```markdown
+## Directory Structure
+
 ```
 dist/
 ├── domain/           # Entity: files
@@ -131,10 +151,11 @@ dist/
 └── repository/
     └── sqlite.go
 ```
+```
 
 **Example 2: Entity + UseCase + InterfaceAdapter** (full)
 
-Input (analyze-layers output):
+CLAUDE.md (Layer Structure from analyze-layers):
 ```markdown
 ### Entity
 ### UseCase
@@ -144,7 +165,10 @@ Input (analyze-layers output):
   - Gateway (output)
 ```
 
-Output (8 entities, medium):
+→ Write to CLAUDE.md (8 entities, medium):
+```markdown
+## Directory Structure
+
 ```
 dist/
 ├── domain/           # Entity: packages
@@ -159,21 +183,26 @@ dist/
 └── gateway/
     └── payment.go
 ```
+```
 
 **Example 3: InterfaceAdapter only** (no domain logic)
 
-Input (analyze-layers output):
+CLAUDE.md (Layer Structure from analyze-layers):
 ```markdown
 ### InterfaceAdapter
   - Handler (input)
   - Repository (output)
 ```
 
-Output:
+→ Write to CLAUDE.md:
+```markdown
+## Directory Structure
+
 ```
 dist/
 ├── handler/
 │   └── bookmark.go
 └── repository/
     └── sqlite.go
+```
 ```

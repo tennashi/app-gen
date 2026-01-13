@@ -32,8 +32,9 @@ Derives layer structure from application requirements and compares it with the c
    - Read current code structure
    - Optionally read Git log for context (committer count, change frequency)
 
-5. **Propose Changes**
-   - Output differences and recommendations
+5. **Write to CLAUDE.md**
+   - Write derived layer structure to project's CLAUDE.md
+   - If structure differs from current, include proposed changes
 
 ---
 
@@ -63,6 +64,8 @@ Automatically gathered:
 ---
 
 ## Output
+
+Write to project's CLAUDE.md:
 
 ```markdown
 ## Layer Structure

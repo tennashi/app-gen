@@ -1,0 +1,8 @@
+{
+  "name": "app-gen",
+  "description": "Application generator",
+  "version": "0.1.0",
+  "author": {
+    "name": "tennashi"
+  }
+}

@@ -14,53 +14,44 @@ No separation - code is embedded directly without function or file boundaries.
 
 ### All Code Units inline (single file)
 
-```go
-// main.go
+```
+// main file
 
-func main() {
+function main() {
     // --- Entity ---
-    type User struct {
-        ID   string
-        Name string
-    }
-    user := User{ID: "1", Name: "alice"}
+    user = { id: "1", name: "alice" }
 
     // --- Repository ---
-    db.Exec("INSERT INTO users (id, name) VALUES (?, ?)", user.ID, user.Name)
+    db.execute("INSERT INTO users ...")
 
     // --- Handler ---
-    json.NewEncoder(w).Encode(user)
+    response.write(user)
 }
 ```
 
 ### Layer embedding - UseCase in Handler
 
-```go
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
-    var req CreateUserRequest
-    json.NewDecoder(r.Body).Decode(&req)
+```
+function UserHandler.create(request) {
+    data = request.body
 
     // UseCase logic (inline, not in separate function)
-    if req.Name == "" {
-        http.Error(w, "name required", http.StatusBadRequest)
-        return
+    if data.name == "" {
+        return error("name required")
     }
-    user := domain.NewUser(uuid.New().String(), req.Name)
+    user = newUser(generateId(), data.name)
 
-    h.repo.Create(r.Context(), user)
-    respondJSON(w, http.StatusCreated, user)
+    repo.create(user)
+    return success(user)
 }
 ```
 
 ### Layer embedding - Framework in Repository
 
-```go
-func (r *SQLiteUserRepository) Create(ctx context.Context, u *domain.User) error {
-    // Framework (sqlite) inline within Repository
-    _, err := r.db.ExecContext(ctx,
-        "INSERT INTO users (id, name) VALUES (?, ?)",
-        u.ID, u.Name)
-    return err
+```
+function UserRepository.create(user) {
+    // Framework (db) inline within Repository
+    db.execute("INSERT INTO users ...", user.id, user.name)
 }
 ```
 

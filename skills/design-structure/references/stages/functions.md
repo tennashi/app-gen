@@ -16,47 +16,36 @@ Separation by extracting functions within a file.
 
 All Code Units for one Feature, separated by functions:
 
-```go
-// user.go
+```
+// user file
 
 // Entity
-type User struct {
-    ID   string
-    Name string
-}
-
-func (u *User) Validate() error {
-    if u.Name == "" {
-        return errors.New("name required")
-    }
-    return nil
-}
+class User { id, name }
+function User.validate() { ... }
 
 // Handler
-func NewUserHandler(repo UserRepository) *UserHandler { ... }
-
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) { ... }
+function newUserHandler(repo) { ... }
+function UserHandler.create(request) { ... }
 
 // Repository
-func NewUserRepository(db *sql.DB) *UserRepository { ... }
-
-func (r *UserRepository) Save(ctx context.Context, u *User) error { ... }
+function newUserRepository(db) { ... }
+function UserRepository.save(user) { ... }
 ```
 
 ### Layer first (functions)
 
 All Code Units for one Layer, separated by functions:
 
-```go
-// handler.go
+```
+// handler file
 
 // User Handler
-func NewUserHandler(repo UserRepository) *UserHandler { ... }
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) { ... }
+function newUserHandler(repo) { ... }
+function UserHandler.create(request) { ... }
 
 // Project Handler
-func NewProjectHandler(repo ProjectRepository) *ProjectHandler { ... }
-func (h *ProjectHandler) Create(w http.ResponseWriter, r *http.Request) { ... }
+function newProjectHandler(repo) { ... }
+function ProjectHandler.create(request) { ... }
 ```
 
 ## When to use

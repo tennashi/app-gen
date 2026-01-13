@@ -53,19 +53,19 @@ Note:
 ### Axis
 Direction of separation: by-layer or by-feature.
 
-- **By Layer**: Group by technical responsibility (entity.go, handler.go, ...)
-- **By Feature**: Group by domain concept (user.go, project.go, ...)
+- **By Layer**: Group by technical responsibility (entity, handler, ...)
+- **By Feature**: Group by domain concept (user, project, ...)
 
 ### Stage
 Granularity of separation:
 
 | Stage | Description | Example |
 |-------|-------------|---------|
-| inline | No separation | all in `main()` |
-| functions | Split into functions | `newUser()`, `saveUser()` |
-| files | Split into files | `user.go`, `handler.go` |
-| packages | Split into directories | `user/`, `handler/` |
-| services | Split into services | `user-service/` |
+| inline | No separation | all in main |
+| functions | Split into functions | newUser(), saveUser() |
+| files | Split into files | user, handler |
+| packages | Split into directories | user/, handler/ |
+| services | Split into services | user-service/ |
 
 Reference:
 - [Inline](references/stages/inline.md)
@@ -89,7 +89,7 @@ Reference:
    - For each separation point, decide Axis and Stage
    - Based on Code Unit count, Git metrics, and estimated complexity
    - **Do NOT consider current directory structure** (derive from requirements only)
-   - **Do NOT pre-consider language-specific constraints** (e.g., Go import cycles)
+   - **Do NOT pre-consider language-specific constraints** (e.g., circular dependencies)
      - If implementation fails due to constraints, adjust then
 
 4. **Write to CLAUDE.md**
@@ -111,7 +111,7 @@ The (Layer/Component) × Feature matrix is sliced along one axis, then optionall
 Everything starts in one file (Stage: inline).
 
 ```
-main.go   // all Code Units in one file
+main   // all Code Units in one file
 ```
 
 ### Step 1: Initial Separation
@@ -132,16 +132,16 @@ Choose Stage based on Code Unit count (see Decision Criteria for details):
 
 **Example: Feature axis + files stage** (slice by columns)
 ```
-task.go      // Entity×Task, Handler×Task, Repository×Task
-project.go   // Entity×Project, Handler×Project, Repository×Project
-comment.go   // ...
+task        // Entity×Task, Handler×Task, Repository×Task
+project     // Entity×Project, Handler×Project, Repository×Project
+comment     // ...
 ```
 
 **Example: Layer axis + files stage** (slice by rows)
 ```
-entity.go     // Entity×Task, Entity×Project, Entity×Comment, ...
-handler.go    // Handler×Task, Handler×Project, ...
-repository.go // Repository×Task, Repository×Project, ...
+entity      // Entity×Task, Entity×Project, Entity×Comment, ...
+handler     // Handler×Task, Handler×Project, ...
+repository  // Repository×Task, Repository×Project, ...
 ```
 
 **Example: Layer axis + packages stage**
@@ -191,14 +191,14 @@ Feature-bound:              Cross-feature:
 **Result:**
 ```
 task/                      // Feature-bound, grouped by Feature
-  entity.go
-  handler.go
-  repository.go
+  entity
+  handler
+  repository
 project/
   ...
 framework/                 // Cross-feature, separated independently
-  db.go
-  http.go
+  db
+  http
 ```
 
 ### Grouping Rules

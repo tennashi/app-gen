@@ -18,13 +18,13 @@ Each package contains all Layers for one Feature:
 
 ```
 user/
-  entity.go      // Entity×User
-  handler.go     // Handler×User
-  repository.go  // Repository×User
+  entity       // Entity×User
+  handler      // Handler×User
+  repository   // Repository×User
 project/
-  entity.go      // Entity×Project
-  handler.go     // Handler×Project
-  repository.go  // Repository×Project
+  entity       // Entity×Project
+  handler      // Handler×Project
+  repository   // Repository×Project
 ```
 
 Internal separation: files, functions, or inline
@@ -35,17 +35,17 @@ Each package contains all Features for one Layer:
 
 ```
 entity/
-  user.go        // Entity×User
-  project.go     // Entity×Project
-  task.go        // Entity×Task
+  user         // Entity×User
+  project      // Entity×Project
+  task         // Entity×Task
 handler/
-  user.go        // Handler×User
-  project.go     // Handler×Project
-  task.go        // Handler×Task
+  user         // Handler×User
+  project      // Handler×Project
+  task         // Handler×Task
 repository/
-  user.go
-  project.go
-  task.go
+  user
+  project
+  task
 ```
 
 Internal separation: files, functions, or inline

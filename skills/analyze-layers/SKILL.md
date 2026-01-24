@@ -1,33 +1,56 @@
 ---
 name: analyze-layers
-description: Derive layer structure from application requirements and propose changes if the current code structure differs. Use when designing architecture, reviewing code structure, or before generating application code.
+description: Analyze whether layer separation benefits the project, and derive layer structure if needed. Use when designing architecture, reviewing code structure, or before generating application code.
 ---
 
 # Layer Structure Analyzer
 
 ## Overview
 
-Derives layer structure from application requirements and compares it with the current code structure. Proposes changes when there are discrepancies.
+Analyzes whether layer separation benefits the project. If separation is warranted, derives layer structure from application requirements.
 
-## Principles
+## What is a Layer?
 
-- **Dependency Rule**: Dependencies point inward only (outer layers depend on inner layers)
-- **Layers are derived**: Not fixed to 4 layers; structure emerges from requirements
-- **YAGNI**: Only separate when benefits outweigh costs
+- **Horizontal separation** by technical responsibility
+- **Dependency direction is defined** (outer → inner)
+- Orthogonal to Feature (vertical separation by business concern)
+
+Layer separation is **not always necessary**. It has costs (complexity). Only separate when benefits outweigh costs.
+
+## When Layer Separation is Beneficial
+
+The core question: **Do you want to keep domain logic independent from external implementations?**
+
+| Situation | Why separation helps |
+|-----------|---------------------|
+| Multiple persistence targets (RDB + MongoDB) | Domain doesn't need to know persistence details |
+| Multiple input interfaces (HTTP + gRPC + CLI) | Domain doesn't need to know input format |
+| Multiple external integrations (Payment A + Payment B) | Domain doesn't need to know API details |
+
+→ When **multiple implementations exist**, and you want to keep domain independent from them.
+
+## When Layer Separation is Unnecessary
+
+| Situation | Why |
+|-----------|-----|
+| Simple CRUD | No domain logic to protect |
+| Single persistence target, unlikely to change | Little benefit from separation |
+| DB schema ≒ Domain model | No divergence to manage |
+| Prototype / PoC | Speed over structure |
 
 ## Definitions
 
 ### Layer
 
-Horizontal separation. Partitions by technical responsibility with defined dependency direction.
+Horizontal separation with defined dependency direction.
 
 **Types:**
-- **Feature-bound**: Has Code Units per Feature. Example: Entity, UseCase, InterfaceAdapter
-- **Cross-feature**: Independent of Features. Example: Framework, Config, Middleware
+- **Feature-bound**: Has Code Units per Feature (e.g., domain layer, adapter layer)
+- **Cross-feature**: Independent of Features (e.g., framework, config, middleware)
 
 ### Feature
 
-Vertical separation by domain/business concern. Orthogonal to Layer (shared across Layers).
+Vertical separation by domain/business concern. Orthogonal to Layer.
 
 Examples: User, Project, Order, Task
 
@@ -37,41 +60,27 @@ Technical subdivision within a Layer. No dependency direction between Components
 
 Examples: Handler, Repository, Gateway, Presenter
 
-```
-Layer: Entity
-  └─ Features: User, Project, Order
-
-Layer: UseCase
-  └─ Features: CreateUser, CreateProject, ...
-
-Layer: InterfaceAdapter
-  └─ Components: Handler (input), Repository (output), Gateway (output)
-  └─ Features: User, Project, Order (shared with Entity)
-```
-
 ## Workflow
 
 1. **Read Requirements**
    - Parse CLAUDE.md for application description, external interfaces, and dependencies
 
-2. **Analyze Domain Logic**
-   - Search codebase for domain logic (not limited to specific directories)
-   - Domain logic = validation rules, state transitions, business constraints
-   - Look for methods like `CanX()`, `IsValid()`, `Validate()`, state machine patterns
+2. **Analyze Whether Separation is Beneficial**
+   - Check: Are there multiple implementations for persistence, input, or external integrations?
+   - Check: Is there domain logic worth protecting from external dependencies?
+   - If no clear benefit, recommend no layer separation
 
-3. **Derive Layer Structure**
-   - Apply derivation logic based on requirements and domain analysis
+3. **Derive Layer Structure** (if separation is beneficial)
+   - Identify boundaries where dependency direction matters
+   - Name layers by their responsibility (naming is flexible)
 
-4. **Analyze Git History** (for existing codebases)
-   - Read Git log for scale metrics (committer count, change frequency, total lines)
-   - Apply Git-based adjustments to derivation
-
-5. **Compare with Current Structure**
+4. **Compare with Current Structure** (for existing codebases)
    - Read current code structure
+   - Propose changes if structure differs
 
-6. **Write to CLAUDE.md**
+5. **Write to CLAUDE.md**
    - Write derived layer structure to project's CLAUDE.md
-   - If structure differs from current, include proposed changes
+   - If no separation needed, document that decision with rationale
 
 ---
 
@@ -94,15 +103,16 @@ Human writes in CLAUDE.md:
 ```
 
 Automatically gathered:
-- Entities and domain logic from codebase
+- Domain logic from codebase
 - Current code structure
-- Git information (optional)
 
 ---
 
 ## Output
 
 Write to project's CLAUDE.md:
+
+**If layer separation is beneficial:**
 
 ```markdown
 ## Layer Structure
@@ -114,57 +124,59 @@ Write to project's CLAUDE.md:
 - {ComponentName} (input|output): {Description}
 ```
 
-Note: Features are not listed (inferred from source code).
+**If layer separation is not needed:**
+
+```markdown
+## Layer Structure
+
+Single layer. No separation.
+
+**Rationale:** {Why separation is unnecessary for this project}
+```
 
 ---
 
 ## Derivation Logic
 
-### Layer Separation
+### Should We Separate Layers?
 
-| Condition | Decision | Rationale |
-|-----------|----------|-----------|
-| Domain logic exists (validation, state transitions) | Separate Entity layer (feature-bound) | Testability benefit |
-| No domain logic (data-only structures) | Entity layer unnecessary | No benefit to separate |
-| Multiple external interfaces sharing logic | Derive UseCase layer (feature-bound) | Reusability benefit |
-| Single external interface | UseCase unnecessary | No benefit to separate |
-| External dependencies exist (DB, HTTP, etc.) | Derive InterfaceAdapter layer (feature-bound) | Dependency isolation |
-| Shared infrastructure needed (connection pools, routers) | Derive Framework layer (cross-feature) | Reusability across Features |
+| Question | If Yes | If No |
+|----------|--------|-------|
+| Multiple persistence targets? | Separate domain from persistence | No separation needed for this |
+| Multiple input interfaces? | Separate domain from input handling | No separation needed for this |
+| Multiple external integrations? | Separate domain from external APIs | No separation needed for this |
+| Domain logic worth protecting? | Separate domain layer | No domain layer needed |
 
-### Feature Separation
+If all answers are "No", layer separation is likely unnecessary.
 
-| Condition | Decision | Rationale |
-|-----------|----------|-----------|
-| Multiple domain entities with distinct rules | Separate Features per entity | Cohesion benefit |
-| Single domain entity | Single Feature | No benefit to separate |
-| Features shared across Layers | List same Features in each Layer | Consistency |
+### What Layers to Create?
 
-### Component Separation
+Layers are defined by **responsibility**, not fixed names.
 
-| Condition | Decision | Rationale |
-|-----------|----------|-----------|
-| Multiple input interfaces (HTTP, gRPC, CLI) | Separate Handler Components | Interface isolation |
-| Multiple output dependencies (DB, cache, API) | Separate Repository/Gateway Components | Dependency isolation |
-| Single input/output | No Component separation | No benefit |
+| Responsibility | Common names (examples) |
+|---------------|------------------------|
+| Holds domain rules and logic | Domain, Entity, Model, Core |
+| Coordinates use cases across interfaces | UseCase, Application, Service |
+| Handles external input/output | Adapter, Infrastructure, Gateway |
+| Provides shared infrastructure | Framework, Platform |
 
-### Git-based Adjustments
+Choose names that fit your project. Existing patterns (MVC, Layered, Clean Architecture, Hexagonal) are references, not requirements.
 
-For existing codebases (skip for new projects):
+### Component Separation (within a Layer)
 
-| Condition | Adjustment |
-|-----------|------------|
-| Many committers (3+) | Prefer clearer Layer/Component boundaries |
-| High change frequency in specific area | Prioritize separating that area |
-| Large codebase (5000+ lines) | More granular Layer separation |
-| Long-lived repository | Favor stability-oriented separation |
+| Condition | Decision |
+|-----------|----------|
+| Multiple input interfaces (HTTP, gRPC, CLI) | Separate input Components |
+| Multiple output dependencies (DB, cache, API) | Separate output Components |
+| Single input/output | No Component separation needed |
 
 ---
 
 ## Examples
 
-- [Simple Internal Tool](references/examples/simple-internal-tool.md) - Entity + InterfaceAdapter
-- [E-commerce Order System](references/examples/ecommerce-order-system.md) - Entity + UseCase + InterfaceAdapter with multiple implementations
-- [Simple CRUD](references/examples/simple-crud.md) - InterfaceAdapter only (no domain logic)
+- [Simple Internal Tool](references/examples/simple-internal-tool.md) - Domain + Adapter
+- [E-commerce Order System](references/examples/ecommerce-order-system.md) - Domain + UseCase + Adapter with multiple implementations
+- [Simple CRUD](references/examples/simple-crud.md) - No layer separation (single layer)
 
 ---
 

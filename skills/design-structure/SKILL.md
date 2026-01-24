@@ -1,299 +1,331 @@
 ---
 name: design-structure
-description: Design directory structure from layer structure. Derives structure through iterative separation decisions. Use before code generation.
+description: Design directory structure from layer structure. Derives structure through separation decisions. Use before code generation.
 ---
 
 # Directory Structure Designer
 
 ## Overview
 
-Designs directory structure by iteratively deciding how to separate code. Each separation decision involves two choices:
-- **Axis**: Layer or Feature (direction of separation)
-- **Stage**: How far to separate (granularity)
+Designs directory structure by deciding how to separate code.
 
 ## Definitions
 
 ### Layer
-Horizontal axis. Partitions by technical responsibility with defined dependency direction.
+Horizontal separation by technical responsibility with defined dependency direction.
 
 **Types:**
-- **Feature-bound**: Has Code Units per Feature. Example: Entity, InterfaceAdapter
-- **Cross-feature**: Independent of Features. Example: Framework, Config, Middleware
+- **Feature-bound**: Has Code Units per Feature (e.g., Domain, Adapter)
+- **Cross-feature**: Independent of Features (e.g., Framework, Config)
 
 ### Feature
-Vertical axis. Partitions by domain/business concern. Orthogonal to Layer.
-Example: Task, Project, User, Order
+Vertical separation by domain/business concern.
 
 ### Component
-Technical subdivision within a Layer. No dependency direction between Components (parallel).
-Example: Handler, Repository, Gateway (all within InterfaceAdapter Layer)
+Subdivision within a Layer. No dependency direction between Components.
+
+Example: Handler, Repository (within Adapter Layer)
+
+### SubFeature
+Subdivision within a Feature.
+
+Example: Admin, Customer (within User Feature)
 
 ### Code Unit
-Intersection of Layer (or Component) × Feature. The actual code to be organized.
-Example: TaskEntity, TaskHandler, TaskRepository
-
-```
-Feature-bound Layers:
-                          |  Task  | Project | Comment |
---------------------------|--------|---------|---------|
-Entity                    |   ●    |    ●    |    ●    |
-InterfaceAdapter/Handler  |   ●    |    ●    |    ●    |
-InterfaceAdapter/Repository|  ●    |    ●    |    ●    |
-
-Cross-feature Layers:
-                          |   DB   |  HTTP   |  Logger |
---------------------------|--------|---------|---------|
-Framework                 |   ●    |    ●    |    ●    |
-```
-
-Note:
-- Handler and Repository are Components within InterfaceAdapter Layer
-- Cross-feature Layers have their own subdivision (not Features)
-
-### Axis
-Direction of separation: by-layer or by-feature.
-
-- **By Layer**: Group by technical responsibility (entity.{ext}, handler.{ext}, ...)
-- **By Feature**: Group by domain concept (user.{ext}, project.{ext}, ...)
+Intersection of Layer (or Component) × Feature (or SubFeature).
 
 ### Stage
 Granularity of separation:
 
-| Stage | Description | Example |
-|-------|-------------|---------|
-| inline | No separation | all in main.{ext} |
-| functions | Split into functions | newUser(), saveUser() |
-| files | Split into files | user.{ext}, handler.{ext} |
-| packages | Split into directories | user/, handler/ |
-| services | Split into services | user-service/ |
-
-Reference:
-- [Inline](references/stages/inline.md)
-- [Functions](references/stages/functions.md)
-- [Files](references/stages/files.md)
-- [Packages](references/stages/packages.md)
-- [Services](references/stages/services.md)
-
-## Workflow
-
-1. **Read Layer Structure**
-   - Parse CLAUDE.md for `## Layer Structure` section
-   - Count Layers, Components (horizontal) and Features (vertical)
-   - Identify the (Layer/Component) × Feature matrix
-
-2. **Analyze Git History** (for existing codebases)
-   - Read Git log for scale metrics (total lines, commits/month, contributors)
-   - Use metrics to inform Stage selection
-
-3. **Derive Separation Decisions**
-   - For each separation point, decide Axis and Stage
-   - Based on Code Unit count, Git metrics, and estimated complexity
-   - **Do NOT consider current directory structure** (derive from requirements only)
-   - **Do NOT pre-consider language-specific constraints** (e.g., circular dependencies)
-     - If implementation fails due to constraints, adjust then
-
-4. **Write to CLAUDE.md**
-   - Write designed directory structure to project's CLAUDE.md
-   - If differs from current structure, note as proposed change
+| Stage | Description |
+|-------|-------------|
+| inline | All in one file |
+| functions | Split into functions |
+| files | Split into files |
+| packages | Split into directories |
+| services | Split into services |
 
 ---
 
-## Separation Flow
+## Workflow
 
-Each separation decision = **Axis** (direction) × **Stage** (granularity)
+### Step 1: Identify what exists
 
-The (Layer/Component) × Feature matrix is sliced along one axis, then optionally subdivided along the other.
+From analyze-layers:
+- Layers and Components
+- Cross-feature Layers
 
-**Note:** When counting for Axis selection, Components count as separate rows (like Layers).
+From domain code (the source code provided as input):
+- **Features**: Identify from file structure and naming
+  - Separate files (user.go, project.go) → separate Features (User, Project)
+  - Single file with multiple entities → single Feature or SubFeatures
+- **SubFeatures**: Identify from structure within Feature
+  - Separate structs/types in one file → SubFeature candidates
+  - Nested or grouped code → SubFeature candidates
 
-### Step 0: Single File
+**Important:** Domain code is used only to identify Features/SubFeatures. The final directory structure is derived from requirements, not from the original code structure.
 
-Everything starts in one file (Stage: inline).
-
-```
-main.{ext}   // all Code Units in one file
-```
-
-### Step 1: Initial Separation
-
-Choose Axis based on matrix shape:
+### Step 2: Choose primary axis
 
 | Condition | Axis |
 |-----------|------|
-| Feature count > (Layer + Component) count | Feature (slice columns) |
-| Feature count ≤ (Layer + Component) count | Layer (slice rows) |
+| Feature count > Layer count | Feature |
+| Feature count ≤ Layer count | Layer |
+| Team owns by Feature | Feature |
+| Team owns by Layer | Layer |
 
-Choose Stage based on Code Unit count (see Decision Criteria for details):
+### Step 3: Decide whether to expand
 
-| Code Units | Stage |
-|------------|-------|
-| ≤ 30 | files (default) |
-| 31+ | packages |
+**Feature axis → Expand SubFeatures?**
 
-**Example: Feature axis + files stage** (slice by columns)
+For each Feature, decide whether to expand its SubFeatures to top level.
+
+| Condition | Decision |
+|-----------|----------|
+| SubFeature count is small and unlikely to grow | Expand |
+| SubFeature count is large or likely to grow | Don't expand |
+| Domain code has separate files per SubFeature | Expand |
+| Domain code has SubFeatures in one file | Don't expand |
+
+Example (expand):
 ```
-task.{ext}        // Entity×Task, Handler×Task, Repository×Task
-project.{ext}     // Entity×Project, Handler×Project, Repository×Project
-comment.{ext}     // ...
+admin/         # expanded from user/admin
+customer/      # expanded from user/customer
+product/
 ```
 
-**Example: Layer axis + files stage** (slice by rows)
+Example (don't expand):
 ```
-entity.{ext}      // Entity×Task, Entity×Project, Entity×Comment, ...
-handler.{ext}     // Handler×Task, Handler×Project, ...
-repository.{ext}  // Repository×Task, Repository×Project, ...
+user/          # admin, customer inside
+product/
 ```
 
-**Example: Layer axis + packages stage**
+**Layer axis → Expand Components?**
+
+For each Layer, decide whether to expand its Components to top level.
+
+| Condition | Decision |
+|-----------|----------|
+| Component count is small and unlikely to grow | Expand |
+| Component count is large or likely to grow | Don't expand |
+
+Example (expand):
 ```
-entity/
-interface_adapter/
-  handler/
-  repository/
+handler/       # expanded from adapter/handler
+repository/    # expanded from adapter/repository
+domain/
 ```
-(Internal structure decided in Step 2)
 
-### Step 2: Internal Separation
+Example (don't expand):
+```
+adapter/       # handler, repository inside
+domain/
+```
 
-After initial separation, each unit may need further separation using the other Axis.
+### Step 4: Choose stage combination
 
-**CRITICAL: Step 2 Stage must be LOWER than Step 1 Stage.**
+Decide outer stage (primary axis) and inner stage (secondary axis) together.
 
-| Step 1 Stage | Step 2 Options |
-|--------------|----------------|
+**Constraint: Inner stage must be lower than outer stage.**
+
+| Outer | Inner options |
+|-------|---------------|
 | services | packages, files, functions, inline |
 | packages | files, functions, inline |
 | files | functions, inline |
 | functions | inline |
-| inline | (none) |
 
-**Example of INVALID derivation:**
-- Step 1: files stage
-- Step 2: files stage ← WRONG (must be functions or inline)
-- Result: packages ← WRONG (contradicts Step 1)
+**Decision table:**
 
-See [references/stages/](references/stages/) for examples of each stage.
+| Want inner separation? | Outer stage | Inner stage |
+|------------------------|-------------|-------------|
+| Yes, by files | packages | files |
+| Yes, by functions | files | functions |
+| No | files | inline |
 
-### Step 3: Extract Cross-feature Layers
+**Examples:**
 
-Cross-feature Layers are separated independently from Feature-bound Layers.
-
-**Layer classification:**
+Feature axis + packages/files:
 ```
-Feature-bound:              Cross-feature:
-- Entity                    - Framework
-- InterfaceAdapter
+user/              # Feature (packages)
+  domain.go        # Layer (files)
+  handler.go
+  repository.go
 ```
 
-- Feature-bound Layers share Features → can group by Feature
-- Cross-feature Layers have their own subdivision → extracted independently
-
-**Result:**
+Feature axis + files/inline:
 ```
-task/                      // Feature-bound, grouped by Feature
-  entity.{ext}
-  handler.{ext}
-  repository.{ext}
-project/
+user.go            # Feature (files), Layer is inline
+project.go
+```
+
+Layer axis + packages/files:
+```
+domain/            # Layer (packages)
+  user.go          # Feature (files)
+  project.go
+```
+
+Layer axis + files/inline:
+```
+domain.go          # Layer (files), Feature is inline
+handler.go
+```
+
+**Principle: Start minimal, grow as needed.**
+
+| Code Unit count | Recommended |
+|-----------------|-------------|
+| 1-3 | files/inline |
+| 4-30 | files/inline or packages/files |
+| 31+ | packages/files |
+
+### Step 5: Handle Cross-feature Layers (Feature axis only)
+
+**Only if analyze-layers identified Cross-feature Layers.**
+
+Do NOT add Cross-feature Layers that were not in analyze-layers output.
+
+When using Feature axis and Cross-feature Layers exist:
+
+**Expand Components or not?**
+
+If Cross-feature Layer has Components (e.g., DB, HTTP, Logger), decide whether to expand:
+
+| Condition | Decision |
+|-----------|----------|
+| Component count is small and unlikely to grow | Expand |
+| Component count is large or likely to grow | Don't expand |
+
+Example (don't expand):
+```
+user/
   ...
-framework/                 // Cross-feature, separated independently
-  db.{ext}
-  http.{ext}
+framework/         # Cross-feature, not expanded
+  db.go
+  http.go
+  logger.go
 ```
 
-### Grouping Rules
-
-Grouping is the inverse of separation.
-
-**Can group?**
-
-| Condition | Can Group? |
-|-----------|------------|
-| Feature-bound Layers/Components | Yes (by Feature) |
-| Cross-feature Layers | No (separate independently) |
-
-**Should group?**
-
-| Condition | Action |
-|-----------|--------|
-| Feature changes > Layer changes | Group by Feature |
-| Team ownership by Feature | Group by Feature |
-| Feature count growing | Group by Feature |
-| Need to see Layer across Features | Group by Layer |
+Example (expand):
+```
+user/
+  ...
+db/                # Cross-feature, expanded
+  connection.go
+  migration.go
+http/              # Cross-feature, expanded
+  router.go
+  middleware.go
+```
 
 ---
 
-## Decision Criteria
+## Separation Priority
 
-### Axis Selection
+1. **Business concern** (Feature → SubFeature)
+2. **Technical responsibility** (Layer → Component)
 
-| Condition | Axis |
-|-----------|------|
-| Feature count > (Layer + Component) count | Feature first (slice columns) |
-| Feature count ≤ (Layer + Component) count | Layer first (slice rows) |
-| Team owns features | Feature |
-| Team owns layers | Layer |
+Separate by business concern first, then by technical responsibility.
 
-### Stage Selection
+---
 
-**By Code Unit count:**
+## Examples
 
-| Code Units | Stage |
-|------------|-------|
-| 1-3 | inline or functions |
-| 4-10 | files |
-| 11-30 | files (consider packages if complex) |
-| 31+ | packages |
+### Feature axis + packages stage
 
-**By estimated lines per Code Unit:**
+```
+user/
+  domain.go
+  handler.go
+  repository.go
+project/
+  domain.go
+  handler.go
+  repository.go
+framework/
+  db.go
+  http.go
+```
 
-| Lines/Unit | Stage |
-|------------|-------|
-| < 50 | files (combine in single file per axis) |
-| 50-150 | files (separate files) |
-| 150+ | packages |
+### Feature axis + files stage
 
-**Principle: Start minimal, grow as needed.**
-- Default to files stage
-- Only use packages when files become unwieldy
+```
+user.go            # domain + handler + repository
+project.go
+framework.go
+```
 
-### Git-based Scale Analysis
+### Layer axis + packages stage
 
-For existing codebases (skip for new projects):
+```
+domain/
+  user.go
+  project.go
+handler/
+  user.go
+  project.go
+repository/
+  user.go
+  project.go
+framework/
+  db.go
+  http.go
+```
 
-| Metric | Threshold | Implication |
-|--------|-----------|-------------|
-| Total lines | < 1000 | files stage sufficient |
-| Total lines | 1000-5000 | files or packages |
-| Total lines | 5000+ | packages likely needed |
-| Commits/month | < 10 | Low churn, files sufficient |
-| Commits/month | 10+ | Higher churn, consider packages |
-| Contributors | 1-2 | files sufficient |
-| Contributors | 3+ | packages for parallel work |
+### Layer axis + files stage
 
-### When to Separate Further
+```
+domain.go          # user + project
+handler.go
+repository.go
+framework.go
+```
 
-| Signal | Action |
-|--------|--------|
-| File > ~300 lines | Consider next stage |
-| Multiple Code Units in one file | Separate by other axis |
-| Cross-feature Layer exists | Extract independently |
-| Layer has multiple Components | Separate Components within Layer |
+### With SubFeature expansion
+
+```
+admin/             # user/admin expanded
+  domain.go
+  handler.go
+  repository.go
+customer/          # user/customer expanded
+  domain.go
+  handler.go
+  repository.go
+product/
+  domain.go
+  handler.go
+  repository.go
+```
+
+### With Component expansion
+
+```
+domain/
+  user.go
+  project.go
+handler/           # adapter/handler expanded
+  user.go
+  project.go
+repository/        # adapter/repository expanded
+  user.go
+  project.go
+```
 
 ---
 
 ## Output Format
-
-**Output must be faithful to the analysis results.**
-- If Step 1 selected files stage, output must be files (not packages)
-- Do NOT contradict the derived Stage in the final structure
 
 Write to project's CLAUDE.md:
 
 ```markdown
 ## Directory Structure
 
+Primary axis: {Feature|Layer}
+Stage: {inline|functions|files|packages|services}
+
 ```
-{directory or file tree based on separation decisions}
+{directory or file tree}
 ```
 ```

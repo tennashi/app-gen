@@ -1,4 +1,4 @@
-# Example: Simple CRUD (No Invariants)
+# Example: Simple CRUD (No Layer Separation)
 
 ## Input (CLAUDE.md)
 
@@ -25,10 +25,14 @@ Simple bookmark manager. No business logic.
 ```markdown
 ## Layer Structure
 
-### InterfaceAdapter (feature-bound)
-Handles external input/output. Entity logic is embedded here (no separate Entity layer needed).
+Single layer. No separation.
 
-**Components:**
-- Handler (input): Processes HTTP requests, contains data structures
-- Repository (output): Persists to SQLite
+**Rationale:** Simple CRUD with no business logic to protect. DB schema matches data model directly.
+
+**Called by:** HTTP server, Database
+
+**Behavior:**
+- Precondition: HTTP request received
+- Postcondition: Correct database operation performed; Correct HTTP response returned
+- Invariant: CRUD operations maintain data consistency
 ```

@@ -15,11 +15,13 @@ Designs directory structure by deciding how to separate code.
 Horizontal separation by technical responsibility with defined dependency direction.
 
 **Types:**
-- **Feature-bound**: Has Code Units per Feature (e.g., Domain, Adapter)
+- **Feature-bound**: Has Code Units per Feature (e.g., Entity, Handler, Repository)
 - **Cross-feature**: Independent of Features (e.g., Framework, Config)
 
 ### Feature
 Vertical separation by domain/business concern.
+
+Examples: User, Project, Order, Task
 
 ### Component
 Subdivision within a Layer. No dependency direction between Components.
@@ -74,150 +76,12 @@ From domain code (the source code provided as input):
 | Team owns by Feature | Feature |
 | Team owns by Layer | Layer |
 
-### Step 3: Decide whether to expand
+**IMPORTANT: After selecting the axis, follow ONLY the corresponding reference file:**
 
-**Feature axis → Expand SubFeatures?**
+- If **Feature axis** selected → Follow [Feature Axis Structure](references/feature-axis.md)
+- If **Layer axis** selected → Follow [Layer Axis Structure](references/layer-axis.md)
 
-For each Feature, decide whether to expand its SubFeatures to top level.
-
-| Condition | Decision |
-|-----------|----------|
-| SubFeature count is small and unlikely to grow | Expand |
-| SubFeature count is large or likely to grow | Don't expand |
-| Domain code has separate files per SubFeature | Expand |
-| Domain code has SubFeatures in one file | Don't expand |
-
-Example (expand):
-```
-admin/         # expanded from user/admin
-customer/      # expanded from user/customer
-product/
-```
-
-Example (don't expand):
-```
-user/          # admin, customer inside
-product/
-```
-
-**Layer axis → Expand Components?**
-
-For each Layer, decide whether to expand its Components to top level.
-
-| Condition | Decision |
-|-----------|----------|
-| Component count is small and unlikely to grow | Expand |
-| Component count is large or likely to grow | Don't expand |
-
-Example (expand):
-```
-handler/       # expanded from adapter/handler
-repository/    # expanded from adapter/repository
-domain/
-```
-
-Example (don't expand):
-```
-adapter/       # handler, repository inside
-domain/
-```
-
-### Step 4: Choose stage combination
-
-Decide outer stage (primary axis) and inner stage (secondary axis) together.
-
-**Constraint: Inner stage must be lower than outer stage.**
-
-| Outer | Inner options |
-|-------|---------------|
-| services | packages, files, functions, inline |
-| packages | files, functions, inline |
-| files | functions, inline |
-| functions | inline |
-
-**Decision table:**
-
-| Want inner separation? | Outer stage | Inner stage |
-|------------------------|-------------|-------------|
-| Yes, by files | packages | files |
-| Yes, by functions | files | functions |
-| No | files | inline |
-
-**Examples:**
-
-Feature axis + packages/files:
-```
-user/              # Feature (packages)
-  domain.go        # Layer (files)
-  handler.go
-  repository.go
-```
-
-Feature axis + files/inline:
-```
-user.go            # Feature (files), Layer is inline
-project.go
-```
-
-Layer axis + packages/files:
-```
-domain/            # Layer (packages)
-  user.go          # Feature (files)
-  project.go
-```
-
-Layer axis + files/inline:
-```
-domain.go          # Layer (files), Feature is inline
-handler.go
-```
-
-**Principle: Start minimal, grow as needed.**
-
-| Code Unit count | Recommended |
-|-----------------|-------------|
-| 1-3 | files/inline |
-| 4-30 | files/inline or packages/files |
-| 31+ | packages/files |
-
-### Step 5: Handle Cross-feature Layers (Feature axis only)
-
-**Only if analyze-layers identified Cross-feature Layers.**
-
-Do NOT add Cross-feature Layers that were not in analyze-layers output.
-
-When using Feature axis and Cross-feature Layers exist:
-
-**Expand Components or not?**
-
-If Cross-feature Layer has Components (e.g., DB, HTTP, Logger), decide whether to expand:
-
-| Condition | Decision |
-|-----------|----------|
-| Component count is small and unlikely to grow | Expand |
-| Component count is large or likely to grow | Don't expand |
-
-Example (don't expand):
-```
-user/
-  ...
-framework/         # Cross-feature, not expanded
-  db.go
-  http.go
-  logger.go
-```
-
-Example (expand):
-```
-user/
-  ...
-db/                # Cross-feature, expanded
-  connection.go
-  migration.go
-http/              # Cross-feature, expanded
-  router.go
-  middleware.go
-```
+Do NOT read or reference the other file.
 
 ---
 
@@ -230,100 +94,17 @@ Separate by business concern first, then by technical responsibility.
 
 ---
 
-## Examples
-
-### Feature axis + packages stage
-
-```
-user/
-  domain.go
-  handler.go
-  repository.go
-project/
-  domain.go
-  handler.go
-  repository.go
-framework/
-  db.go
-  http.go
-```
-
-### Feature axis + files stage
-
-```
-user.go            # domain + handler + repository
-project.go
-framework.go
-```
-
-### Layer axis + packages stage
-
-```
-domain/
-  user.go
-  project.go
-handler/
-  user.go
-  project.go
-repository/
-  user.go
-  project.go
-framework/
-  db.go
-  http.go
-```
-
-### Layer axis + files stage
-
-```
-domain.go          # user + project
-handler.go
-repository.go
-framework.go
-```
-
-### With SubFeature expansion
-
-```
-admin/             # user/admin expanded
-  domain.go
-  handler.go
-  repository.go
-customer/          # user/customer expanded
-  domain.go
-  handler.go
-  repository.go
-product/
-  domain.go
-  handler.go
-  repository.go
-```
-
-### With Component expansion
-
-```
-domain/
-  user.go
-  project.go
-handler/           # adapter/handler expanded
-  user.go
-  project.go
-repository/        # adapter/repository expanded
-  user.go
-  project.go
-```
-
----
-
 ## Output Format
 
 Write to project's CLAUDE.md:
+
+**IMPORTANT: Output ONLY the format specified below. The Primary axis MUST match the axis selected in Step 2.**
 
 ```markdown
 ## Directory Structure
 
 Primary axis: {Feature|Layer}
-Stage: {inline|functions|files|packages|services}
+Stage: {packages|files}
 
 ```
 {directory or file tree}

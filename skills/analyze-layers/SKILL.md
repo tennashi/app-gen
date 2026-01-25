@@ -121,7 +121,9 @@ Automatically gathered:
 
 ## Output
 
-Write to project's CLAUDE.md:
+Write to project's CLAUDE.md.
+
+**IMPORTANT: Output ONLY the format specified below. Do NOT add any extra sections or fields. Keep the output minimal and strictly follow the format.**
 
 **If layer separation is beneficial:**
 

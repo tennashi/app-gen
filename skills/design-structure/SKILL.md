@@ -53,7 +53,7 @@ Granularity of separation:
 
 ### Step 1: Identify what exists
 
-From analyze-layers:
+From split-layer:
 - Layers and Components
 - Cross-feature Layers
 

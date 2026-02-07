@@ -62,9 +62,9 @@ project.go
 
 ## Step 5: Handle Cross-feature Layers
 
-**Only if analyze-layers identified Cross-feature Layers.**
+**Only if split-layer identified Cross-feature Layers.**
 
-Do NOT add Cross-feature Layers that were not in analyze-layers output.
+Do NOT add Cross-feature Layers that were not in split-layer output.
 
 If Cross-feature Layer has Components (e.g., DB, HTTP, Logger), decide whether to expand:
 

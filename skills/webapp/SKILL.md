@@ -18,8 +18,8 @@ This skill generates web application code from domain models using Clean Archite
    - Do NOT write to CLAUDE.md, do NOT stop after this step
 
 2. **Write Layer Structure**
-   - Follow `analyze-layers` skill to derive layers from requirements
-   - Write `## Layer Structure` with Behaviors to CLAUDE.md, do NOT stop after this step
+   - Follow `split-layer` skill to derive layers from requirements
+   - Write `## Layer Structure` to CLAUDE.md, do NOT stop after this step
 
 3. **Design Directory Structure**
    - Follow `design-structure` skill to derive directory structure
@@ -32,8 +32,8 @@ This skill generates web application code from domain models using Clean Archite
    - dist/ should be a complete, runnable application
 
 5. **Generate Tests**
-   - Read Behaviors from `## Layer Structure` in CLAUDE.md
-   - Generate test code based on Behaviors (see Test Generation section)
+   - Read `## Layer Structure` and generated code
+   - Generate test code based on layer type and generated code (see Test Generation section)
    - Output to `dist/` directory alongside implementation
 
 6. **Verify**
@@ -54,7 +54,7 @@ This skill generates web application code from domain models using Clean Archite
 | Simple, fewer abstractions | Three-Tier |
 
 Each reference contains layer concepts and Layer Structure Template for CLAUDE.md:
-- [Clean Architecture](references/layers/clean-architecture.md) (default) - use `analyze-layers` skill
+- [Clean Architecture](references/layers/clean-architecture.md) (default) - use `split-layer` skill
 - [Layered](references/layers/layered.md)
 - [Hexagonal](references/layers/hexagonal.md)
 - [Onion](references/layers/onion.md)
@@ -66,19 +66,19 @@ For non-Clean Architecture styles, copy Layer Structure Template from the refere
 
 ## Test Generation
 
-Tests verify that each layer fulfills its Behavior (Precondition/Postcondition/Invariant).
+Tests verify that each layer fulfills its responsibilities based on its position in the layer structure.
 
 ### Test Strategy by Layer Type
 
 | Layer/Component | What to test | How to test |
 |-----------------|--------------|-------------|
-| Entity (inner) | Postcondition: correct decisions based on rules | Unit test with various inputs |
-| Entity (inner) | Invariant: business rules always satisfied | Unit test that invariant holds after any operation |
-| UseCase | Postcondition: goal achieved by coordinating dependencies | Unit test with mocked dependencies |
-| UseCase | Invariant: consistency maintained | Unit test that checks consistency after operations |
-| Handler (input) | Postcondition: correct response for valid/invalid requests | Unit test with mocked inner layer |
-| Repository (output) | Postcondition: save then retrieve returns equivalent data | Integration test with real or in-memory DB |
-| Gateway (output) | Postcondition: correct external call made | Unit test with mocked external service |
+| Entity (inner) | Correct decisions based on rules | Unit test with various inputs |
+| Entity (inner) | Business rules hold after any operation | Unit test |
+| UseCase | Goal achieved by coordinating dependencies | Unit test with mocked dependencies |
+| UseCase | Consistency maintained after operations | Unit test |
+| Handler (input) | Correct response for valid/invalid requests | Unit test with mocked inner layer |
+| Repository (output) | Save then retrieve returns equivalent data | Integration test with real or in-memory DB |
+| Gateway (output) | Correct external call made | Unit test with mocked external service |
 
 ### Test File Structure
 
@@ -99,11 +99,11 @@ dist/
 
 ### Test Patterns
 
-#### Entity Test (Invariant + Postcondition)
+#### Entity Test
 
 ```go
 func TestTask_CanTransitionTo(t *testing.T) {
-    // Postcondition: Returns correct decision based on business rules
+    // correct decision based on business rules
     task := NewTask("title", StatusTodo)
 
     // Valid transition
@@ -118,7 +118,7 @@ func TestTask_CanTransitionTo(t *testing.T) {
 }
 
 func TestTask_Invariant(t *testing.T) {
-    // Invariant: Entity always satisfies business rules
+    // business rules hold after operation
     task := NewTask("title", StatusTodo)
     task.Complete()
 
@@ -131,11 +131,11 @@ func TestTask_Invariant(t *testing.T) {
 }
 ```
 
-#### Handler Test (Postcondition)
+#### Handler Test
 
 ```go
 func TestTaskHandler_Create(t *testing.T) {
-    // Postcondition: Valid request → correct inner call → correct response
+    // valid request → correct response
     mockUseCase := &MockTaskUseCase{}
     handler := NewTaskHandler(mockUseCase)
 
@@ -150,7 +150,7 @@ func TestTaskHandler_Create(t *testing.T) {
 }
 
 func TestTaskHandler_Create_InvalidRequest(t *testing.T) {
-    // Postcondition: Invalid request → error response
+    // invalid request → error response
     handler := NewTaskHandler(&MockTaskUseCase{})
 
     req := httptest.NewRequest("POST", "/tasks", strings.NewReader(`{invalid}`))
@@ -164,11 +164,11 @@ func TestTaskHandler_Create_InvalidRequest(t *testing.T) {
 }
 ```
 
-#### Repository Test (Postcondition)
+#### Repository Test
 
 ```go
 func TestTaskRepository_SaveAndFind(t *testing.T) {
-    // Postcondition: Save then retrieve → equivalent data returned
+    // save then retrieve → equivalent data returned
     db := setupTestDB(t)
     repo := NewTaskRepository(db)
 
@@ -189,7 +189,7 @@ func TestTaskRepository_SaveAndFind(t *testing.T) {
 }
 
 func TestTaskRepository_FindByID_NotFound(t *testing.T) {
-    // Postcondition: Retrieve non-existent → not-found indication
+    // retrieve non-existent → not-found indication
     db := setupTestDB(t)
     repo := NewTaskRepository(db)
 
@@ -203,8 +203,7 @@ func TestTaskRepository_FindByID_NotFound(t *testing.T) {
 ### Test Conventions
 
 - Use table-driven tests for multiple input scenarios
-- Name tests as `Test{Component}_{Method}` or `Test{Component}_{Behavior}`
-- Comments should reference which Behavior (Precondition/Postcondition/Invariant) is being tested
+- Name tests as `Test{Component}_{Method}`
 - Use `t.Helper()` for test helper functions
 - Use `t.Parallel()` where safe
 
@@ -279,7 +278,7 @@ Generated by skills (can be edited by human):
 ```markdown
 ## Layer Structure
 
-(Includes Behaviors for each layer/component)
+(Derived by split-layer skill)
 
 ## Directory Structure
 

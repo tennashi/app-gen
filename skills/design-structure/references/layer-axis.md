@@ -64,9 +64,9 @@ repository.go
 
 Cross-feature Layers (e.g., Framework) are placed at the same level as other Layers.
 
-**Only if analyze-layers identified Cross-feature Layers.**
+**Only if split-layer identified Cross-feature Layers.**
 
-Do NOT add Cross-feature Layers that were not in analyze-layers output.
+Do NOT add Cross-feature Layers that were not in split-layer output.
 
 Example:
 ```

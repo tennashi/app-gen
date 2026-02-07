@@ -29,7 +29,7 @@ Outer layers depend on inner layers. Never the reverse.
 
 ## Layer Structure Template
 
-Clean Architecture uses `analyze-layers` skill to derive layers dynamically based on:
+Clean Architecture uses `split-layer` skill to derive layers dynamically based on:
 - Domain logic complexity
 - Number of external interfaces
 - External dependencies
@@ -61,4 +61,4 @@ Technical infrastructure.
 - HTTP: Router, middleware
 ```
 
-Note: Not all layers are always needed. See `analyze-layers` skill for derivation logic.
+Note: Not all layers are always needed. See `split-layer` skill for derivation logic.

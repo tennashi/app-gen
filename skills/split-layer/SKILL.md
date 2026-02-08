@@ -99,15 +99,9 @@ From codebase (if exists):
 **Called by:** {caller layer, or External}
 ```
 
-### Feature (if multiple domain concerns exist)
-
-```markdown
-**Features:** {Feature1}, {Feature2}, ...
-```
-
 ### Full structure
 
-Combine the above. List layers from inner to outer. Wrap in `## Layer Structure`.
+List layers from inner to outer. Wrap in `## Layer Structure`.
 
 ```markdown
 ## Layer Structure

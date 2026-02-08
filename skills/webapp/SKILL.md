@@ -18,8 +18,8 @@ This skill generates web application code from domain models using Clean Archite
    - Do NOT write to CLAUDE.md, do NOT stop after this step
 
 2. **Write Layer Structure**
-   - Follow `split-layer` skill to derive layers from requirements
-   - Write `## Layer Structure` to CLAUDE.md, do NOT stop after this step
+   - Run `split-layer` skill once, write `## Layer Structure` to CLAUDE.md
+   - Do NOT run split-layer a second time, do NOT stop after this step
 
 3. **Design Directory Structure**
    - Follow `design-structure` skill to derive directory structure

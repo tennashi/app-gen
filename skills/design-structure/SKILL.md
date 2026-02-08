@@ -1,96 +1,101 @@
 ---
 name: design-structure
-description: Design directory structure from layer structure. Derives structure through separation decisions. Use before code generation.
+description: Design code structure from layer structure. Derives structure through separation decisions. Use before code generation.
 ---
 
-# Directory Structure Designer
+# Structure Designer
 
 ## Overview
 
-Designs directory structure by deciding how to separate code.
+Designs code structure by building a Structure Tree. Each node declares how it is separated from its siblings.
+
+Structure emerges from assessing what separation is needed, not from upfront design.
 
 ## Definitions
 
-### Layer
-Horizontal separation by technical responsibility with defined dependency direction.
-
-**Types:**
-- **Feature-bound**: Has Code Units per Feature (e.g., Entity, Handler, Repository)
-- **Cross-feature**: Independent of Features (e.g., Framework, Config)
-
-### Feature
-Vertical separation by domain/business concern.
-
-Examples: User, Project, Order, Task
-
-### Component
-Subdivision within a Layer. No dependency direction between Components.
-
-Example: Handler, Repository (within Adapter Layer)
-
-### SubFeature
-Subdivision within a Feature.
-
-Example: Admin, Customer (within User Feature)
-
-### Code Unit
-Intersection of Layer (or Component) × Feature (or SubFeature).
-
 ### Stage
-Granularity of separation:
 
-| Stage | Description |
-|-------|-------------|
-| inline | All in one file |
-| functions | Split into functions |
-| files | Split into files |
-| packages | Split into directories |
-| services | Split into services |
+How a node is separated from its siblings. Each stage provides a specific type of independence:
+
+| Stage | Boundary | Independence |
+|-------|----------|--------------|
+| inline | None | - |
+| functions | Function call | Testability |
+| files | File | Identifiability |
+| packages | Package/Directory | Enforceability |
+| services | Process/Network | Deployability |
+
+### Valid Parent-Child Stages
+
+A child's stage is constrained by its parent's stage (physical containment):
+
+| Parent Stage | Valid Child Stages |
+|--------------|-------------------|
+| services | services, packages, files |
+| packages | packages, files, functions, inline |
+| files | functions, inline |
+| functions | functions, inline |
+| inline | inline |
+
+### Structure Tree
+
+A tree of Feature and Layer nodes:
+
+- Top level: Features + Cross-feature Layers
+- Under each Feature: Feature-bound Layers
+- Under Layers with Components: Components
+- Under Features with SubFeatures: SubFeatures
+- Each node declares its Stage
+
+Feature is always the outer grouping.
 
 ---
 
 ## Workflow
 
-### Step 1: Identify what exists
+### Step 1: Build logical tree
 
-From split-layer:
-- Layers and Components
-- Cross-feature Layers
+From split-layer output and domain code, build the tree structure (without Stages):
 
-From domain code (the source code provided as input):
-- **Features**: Identify from file structure and naming
-  - Separate files (user.go, project.go) → separate Features (User, Project)
-  - Single file with multiple entities → single Feature or SubFeatures
-- **SubFeatures**: Identify from structure within Feature
-  - Separate structs/types in one file → SubFeature candidates
-  - Nested or grouped code → SubFeature candidates
+- Top level: Features (from domain code) + Cross-feature Layers (from split-layer)
+- Under each Feature: Feature-bound Layers (from split-layer)
+- Under Layers with Components: Components
+- Under Features with SubFeatures: SubFeatures
 
-**Important:** Domain code is used only to identify Features/SubFeatures. The final directory structure is derived from requirements, not from the original code structure.
+This step determines all nodes and their parent-child relationships. The logical structure is fixed here.
 
-### Step 2: Choose primary axis
+### Step 2: Assign Stages top-down
 
-| Condition | Axis |
-|-----------|------|
-| Feature count > Layer count | Feature |
-| Feature count ≤ Layer count | Layer |
-| Team owns by Feature | Feature |
-| Team owns by Layer | Layer |
+Starting from the top-level sibling group, assign Stages downward. Parent's Stage constrains child's choices (see Valid Parent-Child Stages).
 
-**IMPORTANT: After selecting the axis, follow ONLY the corresponding reference file:**
+For each sibling group, start from inline and increase only when a specific independence is needed:
 
-- If **Feature axis** selected → Follow [Feature Axis Structure](references/feature-axis.md)
-- If **Layer axis** selected → Follow [Layer Axis Structure](references/layer-axis.md)
+| Need | Stage |
+|------|-------|
+| No separation needed | inline |
+| Independent testing of each sibling | functions |
+| Human needs to see/navigate structure | files |
+| Dependency rules must be enforced by tooling | packages |
+| Independent deployment | services |
 
-Do NOT read or reference the other file.
+Notes:
+- LLM-as-developer rarely needs packages. Convention via files is usually sufficient.
+- files is primarily for human comprehension (table of contents for the codebase).
+- functions is for when siblings have independent judgments that need isolated testing.
 
----
+### Step 3: Derive physical structure
 
-## Separation Priority
+Convert Structure Tree to physical file/directory tree:
 
-1. **Business concern** (Feature → SubFeature)
-2. **Technical responsibility** (Layer → Component)
+| Stage | Physical |
+|-------|----------|
+| services | Separate project directory (with own entry point) |
+| packages | Directory |
+| files | File |
+| functions | Functions within parent file |
+| inline | No new boundary |
 
-Separate by business concern first, then by technical responsibility.
+Entry point (main.go etc.) is always at the project root.
 
 ---
 
@@ -98,15 +103,128 @@ Separate by business concern first, then by technical responsibility.
 
 Write to project's CLAUDE.md:
 
-**IMPORTANT: Output ONLY the format specified below. The Primary axis MUST match the axis selected in Step 2.**
-
 ```markdown
 ## Directory Structure
 
-Primary axis: {Feature|Layer}
-Stage: {packages|files}
+### Structure Tree
 
 ```
-{directory or file tree}
+{structure tree with stages}
 ```
+
+### Physical
+
+```
+{file/directory tree}
+```
+```
+
+---
+
+## Examples
+
+### Single Feature, Single Layer
+
+split-layer: Application (feature-bound)
+Domain: Task
+
+```
+Task (files)
+  Application (inline)
+```
+
+```
+main.go
+task.go
+```
+
+### Multiple Features, Multiple Layers (small)
+
+split-layer: Entity (feature-bound), UseCase (feature-bound), Adapter[Handler, Repository] (feature-bound), Framework (cross-feature)
+Domain: User, Project
+
+```
+User (files)
+  Entity (inline)
+  UseCase (inline)
+  Handler (inline)
+  Repository (inline)
+Project (files)
+  Entity (inline)
+  UseCase (inline)
+  Handler (inline)
+  Repository (inline)
+Framework (files)
+```
+
+```
+main.go
+user.go
+project.go
+framework.go
+```
+
+### Multiple Features, Multiple Layers (enforced)
+
+Same input, but dependency enforcement needed between Features (inner separation not yet needed):
+
+```
+User (packages)
+  Entity (inline)
+  UseCase (inline)
+  Handler (inline)
+  Repository (inline)
+Project (packages)
+  Entity (inline)
+  UseCase (inline)
+  Handler (inline)
+  Repository (inline)
+Framework (packages)
+```
+
+```
+user/
+  user.go
+project/
+  project.go
+framework/
+  framework.go
+main.go
+```
+
+### Multiple Features, Multiple Layers (growing)
+
+Same input, but Features need inner visibility for human navigation:
+
+```
+User (packages)
+  Entity (files)
+  UseCase (files)
+  Handler (files)
+  Repository (files)
+Project (packages)
+  Entity (files)
+  UseCase (files)
+  Handler (files)
+  Repository (files)
+Framework (packages)
+  DB (files)
+  HTTP (files)
+```
+
+```
+user/
+  entity.go
+  usecase.go
+  handler.go
+  repository.go
+project/
+  entity.go
+  usecase.go
+  handler.go
+  repository.go
+framework/
+  db.go
+  http.go
+main.go
 ```

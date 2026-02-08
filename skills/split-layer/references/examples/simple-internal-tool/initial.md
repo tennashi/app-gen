@@ -33,5 +33,5 @@ Internal TODO app for a small team.
 
 ### Adapter (feature-bound)
 
-**Called by:** HTTP server
+**Called by:** External
 ```

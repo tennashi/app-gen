@@ -25,7 +25,7 @@ CLI tool that reads CSV files, validates and transforms records, and outputs res
 
 ### IO (cross-feature)
 
-**Called by:** CLI entry point
+**Called by:** External
 ```
 
 ## Analysis

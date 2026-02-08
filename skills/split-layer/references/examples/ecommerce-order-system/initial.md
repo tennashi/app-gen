@@ -37,5 +37,5 @@ Order management system with multiple entry points.
 
 ### Adapter (feature-bound)
 
-**Called by:** HTTP server (Web API, Admin API), Batch scheduler
+**Called by:** External
 ```

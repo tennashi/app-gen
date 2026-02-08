@@ -19,7 +19,7 @@ Simple bookmark manager. Stores and retrieves bookmarks.
 
 ### Application (cross-feature)
 
-**Called by:** HTTP server, SQLite
+**Called by:** External
 ```
 
 ## Analysis

@@ -96,7 +96,7 @@ From codebase (if exists):
 ```markdown
 ### {LayerName} (feature-bound|cross-feature)
 
-**Called by:** {who calls this layer}
+**Called by:** {caller layer, or External}
 ```
 
 ### Feature (if multiple domain concerns exist)

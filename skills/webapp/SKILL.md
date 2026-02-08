@@ -23,7 +23,7 @@ This skill generates web application code from domain models using Clean Archite
 
 3. **Design Directory Structure**
    - Follow `design-structure` skill to derive directory structure
-   - Read `## Layer Structure` from CLAUDE.md
+   - Input: `## Layer Structure` from CLAUDE.md, domain models, External Interfaces / External Dependencies from CLAUDE.md
    - Write `## Directory Structure` to CLAUDE.md, do NOT stop after this step
 
 4. **Generate Code**

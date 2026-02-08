@@ -55,11 +55,12 @@ Feature is always the outer grouping.
 
 ### Step 1: Build logical tree
 
-From split-layer output and domain code, build the tree structure (without Stages):
+From split-layer output, domain code, and CLAUDE.md, build the tree structure (without Stages):
 
 - Top level: Features (from domain code) + Cross-feature Layers (from split-layer)
 - Under each Feature: Feature-bound Layers (from split-layer)
-- Under Layers with Components: Components
+- Under Layers with Components: Components (from split-layer, or from External Interfaces / External Dependencies for Cross-feature Layers)
+  - Layers with Components can be marked as omitted (e.g., `Adapter (omit)`), promoting Components to the parent level in the tree
 - Under Features with SubFeatures: SubFeatures
 
 This step determines all nodes and their parent-child relationships. The logical structure is fixed here.
@@ -147,13 +148,15 @@ Domain: User, Project
 User (files)
   Entity (inline)
   UseCase (inline)
-  Handler (inline)
-  Repository (inline)
+  Adapter (omit)
+    Handler (inline)
+    Repository (inline)
 Project (files)
   Entity (inline)
   UseCase (inline)
-  Handler (inline)
-  Repository (inline)
+  Adapter (omit)
+    Handler (inline)
+    Repository (inline)
 Framework (files)
 ```
 
@@ -172,13 +175,15 @@ Same input, but dependency enforcement needed between Features (inner separation
 User (packages)
   Entity (inline)
   UseCase (inline)
-  Handler (inline)
-  Repository (inline)
+  Adapter (omit)
+    Handler (inline)
+    Repository (inline)
 Project (packages)
   Entity (inline)
   UseCase (inline)
-  Handler (inline)
-  Repository (inline)
+  Adapter (omit)
+    Handler (inline)
+    Repository (inline)
 Framework (packages)
 ```
 
@@ -200,13 +205,15 @@ Same input, but Features need inner visibility for human navigation:
 User (packages)
   Entity (files)
   UseCase (files)
-  Handler (files)
-  Repository (files)
+  Adapter (omit)
+    Handler (files)
+    Repository (files)
 Project (packages)
   Entity (files)
   UseCase (files)
-  Handler (files)
-  Repository (files)
+  Adapter (omit)
+    Handler (files)
+    Repository (files)
 Framework (packages)
   DB (files)
   HTTP (files)

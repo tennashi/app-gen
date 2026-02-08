@@ -82,20 +82,7 @@ Tests verify that each layer fulfills its responsibilities based on its position
 
 ### Test File Structure
 
-Place test files alongside implementation:
-
-```
-dist/
-  entity/
-    task.go
-    task_test.go      # Entity tests
-  handler/
-    task_handler.go
-    task_handler_test.go  # Handler tests
-  repository/
-    task_repository.go
-    task_repository_test.go  # Repository tests
-```
+Place test files alongside implementation. The directory layout follows `design-structure` output.
 
 ### Test Patterns
 

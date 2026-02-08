@@ -69,6 +69,8 @@ First, check whether `## Layer Structure` exists in the project's CLAUDE.md.
 
 Do NOT read both files. Read only the one that applies.
 
+**One invocation = one procedure.** Write output to CLAUDE.md and stop. Do NOT continue to subsequent after initial in the same invocation.
+
 ---
 
 ## Input

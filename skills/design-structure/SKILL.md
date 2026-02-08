@@ -55,9 +55,10 @@ Feature is always the outer grouping.
 
 ### Step 1: Build logical tree
 
-From split-layer output, domain code, and CLAUDE.md, build the tree structure (without Stages):
+From split-layer output, domain models, and CLAUDE.md, build the tree structure (without Stages).
+Ignore existing code structure — derive Features solely from domain model definitions (types, entities).
 
-- Top level: Features (from domain code) + Cross-feature Layers (from split-layer)
+- Top level: Features (from domain models) + Cross-feature Layers (from split-layer)
 - Under each Feature: Feature-bound Layers (from split-layer)
 - Under Layers with Components: Components (from split-layer, or from External Interfaces / External Dependencies for Cross-feature Layers)
   - Layers with Components can be marked as omitted (e.g., `Adapter (omit)`), promoting Components to the parent level in the tree

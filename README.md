@@ -1,4 +1,4 @@
-# app-gen
+# maf
 
 A flexible and extensible Web Application Framework that lets you reclaim ownership of your code whenever you need.
 
